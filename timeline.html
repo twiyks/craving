@@ -200,9 +200,12 @@
             color: #666;
             text-align: center;
             margin-top: 8px;
+            white-space: nowrap;
+        }
+        
+        .bar-label.rotated {
             transform: rotate(-45deg);
             transform-origin: center;
-            white-space: nowrap;
         }
 
         .bar-value {
@@ -575,8 +578,8 @@
                 
                 // Update chart title
                 const titles = {
-                    day: 'Daily Timeline (Last 14 Days)',
-                    week: 'Weekly Timeline (Last 12 Weeks)', 
+                    day: 'Today\'s Activity',
+                    week: 'This Week (Monday - Sunday)', 
                     month: 'Monthly Timeline (Last 12 Months)',
                     year: 'Yearly Timeline'
                 };
@@ -590,6 +593,8 @@
 
                 // Render bars
                 const maxValue = Math.max(...data.map(d => Math.max(d.cravings, d.vaped)));
+                const needsRotation = this.currentPeriod === 'day' || this.currentPeriod === 'month';
+                
                 const barsHTML = data.map(item => {
                     const cravingsHeight = maxValue > 0 ? (item.cravings / maxValue) * 100 : 0;
                     const vapedHeight = maxValue > 0 ? (item.vaped / maxValue) * 100 : 0;
@@ -602,7 +607,7 @@
                             <div class="bar vaped" style="height: ${vapedHeight}%">
                                 <div class="bar-value">${item.vaped}</div>
                             </div>
-                            <div class="bar-label">${item.label}</div>
+                            <div class="bar-label ${needsRotation ? 'rotated' : ''}">${item.label}</div>
                         </div>
                     `;
                 }).join('');
@@ -621,37 +626,50 @@
 
                 switch (this.currentPeriod) {
                     case 'day':
-                        for (let i = 13; i >= 0; i--) {
-                            const date = new Date(now);
-                            date.setDate(date.getDate() - i);
-                            const dateString = date.toDateString();
+                        // Show only today's data with hourly breakdown
+                        const today = new Date();
+                        const todayString = today.toDateString();
+                        
+                        // Group today's entries by hour
+                        for (let hour = 0; hour < 24; hour++) {
+                            const hourEntries = this.entries.filter(e => {
+                                if (e.date !== todayString) return false;
+                                const entryHour = new Date(e.timestamp).getHours();
+                                return entryHour === hour;
+                            });
                             
-                            const dayEntries = this.entries.filter(e => e.date === dateString);
+                            const hourLabel = hour === 0 ? '12 AM' : 
+                                            hour < 12 ? `${hour} AM` : 
+                                            hour === 12 ? '12 PM' : 
+                                            `${hour - 12} PM`;
+                            
                             data.push({
-                                label: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                                cravings: dayEntries.filter(e => e.type === 'craving').length,
-                                vaped: dayEntries.filter(e => e.type === 'smoked').length,
-                                date: dateString
+                                label: hourLabel,
+                                cravings: hourEntries.filter(e => e.type === 'craving').length,
+                                vaped: hourEntries.filter(e => e.type === 'smoked').length,
+                                hour: hour
                             });
                         }
                         break;
 
                     case 'week':
-                        for (let i = 11; i >= 0; i--) {
-                            const weekStart = new Date(now);
-                            weekStart.setDate(weekStart.getDate() - (weekStart.getDay() + i * 7));
-                            const weekEnd = new Date(weekStart);
-                            weekEnd.setDate(weekEnd.getDate() + 6);
+                        // Show current week (Monday to Sunday)
+                        const currentDate = new Date(now);
+                        const currentDay = currentDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                        const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay; // Calculate days to Monday
+                        
+                        for (let i = 0; i < 7; i++) {
+                            const weekDay = new Date(currentDate);
+                            weekDay.setDate(currentDate.getDate() + mondayOffset + i);
+                            const weekDayString = weekDay.toDateString();
                             
-                            const weekEntries = this.entries.filter(e => {
-                                const entryDate = new Date(e.timestamp);
-                                return entryDate >= weekStart && entryDate <= weekEnd;
-                            });
+                            const dayEntries = this.entries.filter(e => e.date === weekDayString);
                             
                             data.push({
-                                label: `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
-                                cravings: weekEntries.filter(e => e.type === 'craving').length,
-                                vaped: weekEntries.filter(e => e.type === 'smoked').length
+                                label: weekDay.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+                                cravings: dayEntries.filter(e => e.type === 'craving').length,
+                                vaped: dayEntries.filter(e => e.type === 'smoked').length,
+                                date: weekDayString
                             });
                         }
                         break;
