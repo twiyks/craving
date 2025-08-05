@@ -267,11 +267,14 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 5px;
+            gap: 10px;
         }
 
         .entry-time {
             font-weight: bold;
             color: #374156;
+            flex: 1;
+            min-width: 0;
         }
 
         .entry-type {
@@ -296,6 +299,13 @@
             margin-top: 5px;
         }
 
+        .entry-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
         .edit-btn, .delete-btn {
             background: #e53e3e;
             color: white;
@@ -304,7 +314,7 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 12px;
-            margin-left: 4px;
+            flex-shrink: 0;
         }
 
         .edit-btn {
@@ -393,18 +403,60 @@
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+
             .container {
                 margin: 0;
                 border-radius: 0;
                 min-height: 100vh;
             }
 
-            .button-group {
-                grid-template-columns: 1fr;
+            .main {
+                padding: 20px 15px;
             }
 
-            .craving-button, .smoked-button {
+            .button-group {
+                grid-template-columns: 1fr;
+                margin-bottom: 15px;
+            }
+
+            .craving-button, .vaped-button {
                 height: 60px;
+            }
+
+            .add-past-btn {
+                padding: 10px;
+                margin-bottom: 15px;
+                font-size: 13px;
+            }
+
+            .data-controls {
+                margin-bottom: 15px !important;
+            }
+
+            .entry-time {
+                font-size: 13px;
+            }
+
+            .entry-type {
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+
+            .edit-btn, .delete-btn {
+                padding: 3px 6px;
+                font-size: 11px;
+                min-width: 24px;
+            }
+
+            .entry-header {
+                gap: 8px;
+            }
+
+            .entry {
+                padding: 12px;
             }
         }
     </style>
@@ -1027,7 +1079,7 @@
                         <div class="entry ${typeClass}">
                             <div class="entry-header">
                                 <div class="entry-time">${timeString}</div>
-                                <div>
+                                <div class="entry-actions">
                                     <span class="entry-type ${typeColor}">${typeLabel}</span>
                                     <button class="edit-btn" onclick="app.editEntry(${entry.id})" title="Edit entry">✏️</button>
                                     <button class="delete-btn" onclick="app.deleteEntry(${entry.id})" title="Delete entry">×</button>
