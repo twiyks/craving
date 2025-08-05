@@ -418,6 +418,16 @@
                 📅 Add Past Entry
             </button>
 
+            <div class="data-controls" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                <button class="add-past-btn" id="exportBtn" style="background: #48bb78;">
+                    📤 Export Data
+                </button>
+                <button class="add-past-btn" id="importBtn" style="background: #ed8936;">
+                    📥 Import Data
+                </button>
+            </div>
+            <input type="file" id="importFile" accept=".json" style="display: none;">
+
             <div class="note-section">
                 <textarea 
                     class="note-input" 
@@ -473,18 +483,184 @@
     </div>
 
     <script>
-        // Service Worker Registration
+        // Service Worker Registration with improved caching
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:application/javascript;base64,Y29uc3QgQ0FDSEVfTkFNRSA9ICdxdWl0LXRyYWNrZXItdjInOwpjb25zdCB1cmxzVG9DYWNoZSA9IFsnLyddOwoKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZXZlbnQgPT4gewogIGV2ZW50LndhaXRVbnRpbCgKICAgIGNhY2hlcy5vcGVuKENBQ0hFX05BTUUpCiAgICAgIC50aGVuKGNhY2hlID0+IGNhY2hlLmFkZEFsbCh1cmxzVG9DYWNoZSkpCiAgKTsKfSk7CgpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2ZldGNoJywgZXZlbnQgPT4gewogIGV2ZW50LnJlc3BvbmRXaXRoKAogICAgY2FjaGVzLm1hdGNoKGV2ZW50LnJlcXVlc3QpCiAgICAgIC50aGVuKHJlc3BvbnNlID0+IHsKICAgICAgICByZXR1cm4gcmVzcG9uc2UgfHwgZmV0Y2goZXZlbnQucmVxdWVzdCk7CiAgICAgIH0pCiAgKTsKfSk7')
-                .then(() => console.log('Service Worker registered'))
-                .catch(err => console.log('Service Worker registration failed'));
+            const swCode = `
+                const CACHE_NAME = 'quit-tracker-v3';
+                const urlsToCache = ['/'];
+
+                self.addEventListener('install', event => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => cache.addAll(urlsToCache))
+                            .then(() => self.skipWaiting())
+                    );
+                });
+
+                self.addEventListener('activate', event => {
+                    event.waitUntil(
+                        caches.keys().then(cacheNames => {
+                            return Promise.all(
+                                cacheNames.map(cacheName => {
+                                    if (cacheName !== CACHE_NAME) {
+                                        return caches.delete(cacheName);
+                                    }
+                                })
+                            );
+                        }).then(() => self.clients.claim())
+                    );
+                });
+
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => {
+                                if (response) {
+                                    return response;
+                                }
+                                return fetch(event.request).then(response => {
+                                    if (!response || response.status !== 200 || response.type !== 'basic') {
+                                        return response;
+                                    }
+                                    const responseToCache = response.clone();
+                                    caches.open(CACHE_NAME)
+                                        .then(cache => {
+                                            cache.put(event.request, responseToCache);
+                                        });
+                                    return response;
+                                });
+                            })
+                    );
+                });
+            `;
+            
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(swUrl)
+                .then(() => {
+                    console.log('Service Worker registered with improved caching');
+                    URL.revokeObjectURL(swUrl);
+                })
+                .catch(err => console.log('Service Worker registration failed:', err));
+        }
+
+        // IndexedDB wrapper for persistent storage
+        class DataStore {
+            constructor() {
+                this.dbName = 'QuitTrackerDB';
+                this.version = 1;
+                this.storeName = 'entries';
+                this.db = null;
+            }
+
+            async init() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.dbName, this.version);
+                    
+                    request.onerror = () => reject(request.error);
+                    request.onsuccess = () => {
+                        this.db = request.result;
+                        resolve(this.db);
+                    };
+                    
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        if (!db.objectStoreNames.contains(this.storeName)) {
+                            const store = db.createObjectStore(this.storeName, { keyPath: 'id' });
+                            store.createIndex('timestamp', 'timestamp', { unique: false });
+                            store.createIndex('type', 'type', { unique: false });
+                        }
+                    };
+                });
+            }
+
+            async saveEntries(entries) {
+                if (!this.db) await this.init();
+                
+                const transaction = this.db.transaction([this.storeName], 'readwrite');
+                const store = transaction.objectStore(this.storeName);
+                
+                // Clear existing entries and add new ones
+                await store.clear();
+                for (const entry of entries) {
+                    await store.add(entry);
+                }
+                
+                return new Promise((resolve, reject) => {
+                    transaction.oncomplete = () => resolve();
+                    transaction.onerror = () => reject(transaction.error);
+                });
+            }
+
+            async loadEntries() {
+                if (!this.db) await this.init();
+                
+                const transaction = this.db.transaction([this.storeName], 'readonly');
+                const store = transaction.objectStore(this.storeName);
+                const request = store.getAll();
+                
+                return new Promise((resolve, reject) => {
+                    request.onsuccess = () => {
+                        const entries = request.result.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                        resolve(entries);
+                    };
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async exportData() {
+                const entries = await this.loadEntries();
+                const exportData = {
+                    version: 1,
+                    exportDate: new Date().toISOString(),
+                    entries: entries
+                };
+                return JSON.stringify(exportData, null, 2);
+            }
+
+            async importData(jsonData) {
+                try {
+                    const data = JSON.parse(jsonData);
+                    if (data.entries && Array.isArray(data.entries)) {
+                        await this.saveEntries(data.entries);
+                        return data.entries.length;
+                    }
+                    throw new Error('Invalid data format');
+                } catch (error) {
+                    throw new Error('Failed to import data: ' + error.message);
+                }
+            }
         }
 
         class QuitTracker {
             constructor() {
-                this.entries = this.loadEntries();
+                this.dataStore = new DataStore();
+                this.entries = [];
                 this.initializeElements();
                 this.bindEvents();
+                this.initializeApp();
+            }
+
+            async initializeApp() {
+                try {
+                    // Try to load from IndexedDB first
+                    this.entries = await this.dataStore.loadEntries();
+                    
+                    // If no data in IndexedDB, check localStorage for migration
+                    if (this.entries.length === 0) {
+                        const localStorageData = this.loadFromLocalStorage();
+                        if (localStorageData.length > 0) {
+                            await this.dataStore.saveEntries(localStorageData);
+                            this.entries = localStorageData;
+                            console.log('Migrated data from localStorage to IndexedDB');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Failed to load from IndexedDB, falling back to localStorage:', error);
+                    this.entries = this.loadFromLocalStorage();
+                }
+                
                 this.updateStats();
                 this.renderHistory();
             }
@@ -498,6 +674,9 @@
                 this.historyContainer = document.getElementById('entryHistory');
                 this.clearBtn = document.getElementById('clearBtn');
                 this.addPastBtn = document.getElementById('addPastBtn');
+                this.exportBtn = document.getElementById('exportBtn');
+                this.importBtn = document.getElementById('importBtn');
+                this.importFile = document.getElementById('importFile');
                 
                 // Stats elements
                 this.todayCravings = document.getElementById('todayCravings');
@@ -516,6 +695,9 @@
                 this.smokedBtn.addEventListener('click', () => this.recordEntry('smoked'));
                 this.clearBtn.addEventListener('click', () => this.clearHistory());
                 this.addPastBtn.addEventListener('click', () => this.showPastEntryModal());
+                this.exportBtn.addEventListener('click', () => this.exportData());
+                this.importBtn.addEventListener('click', () => this.importFile.click());
+                this.importFile.addEventListener('change', (e) => this.importData(e));
                 this.cancelPastBtn.addEventListener('click', () => this.hidePastEntryModal());
                 this.pastEntryForm.addEventListener('submit', (e) => this.handlePastEntrySubmit(e));
                 
@@ -527,7 +709,7 @@
                 });
             }
 
-            recordEntry(type) {
+            async recordEntry(type) {
                 const now = new Date();
                 const entry = {
                     id: Date.now(),
@@ -538,7 +720,7 @@
                 };
 
                 this.entries.unshift(entry);
-                this.saveEntries();
+                await this.saveEntries();
                 this.noteInput.value = '';
                 
                 if (type === 'craving') {
@@ -563,7 +745,7 @@
                 this.pastEntryForm.reset();
             }
 
-            handlePastEntrySubmit(e) {
+            async handlePastEntrySubmit(e) {
                 e.preventDefault();
                 
                 const type = document.getElementById('entryType').value;
@@ -588,7 +770,7 @@
 
                 this.entries.push(entry);
                 this.entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                this.saveEntries();
+                await this.saveEntries();
                 this.hidePastEntryModal();
                 
                 this.showMessage('success', `Past ${type} entry added successfully!`);
@@ -596,10 +778,10 @@
                 this.renderHistory();
             }
 
-            deleteEntry(id) {
+            async deleteEntry(id) {
                 if (confirm('Are you sure you want to delete this entry?')) {
                     this.entries = this.entries.filter(entry => entry.id !== id);
-                    this.saveEntries();
+                    await this.saveEntries();
                     this.updateStats();
                     this.renderHistory();
                 }
@@ -690,17 +872,17 @@
                 this.historyContainer.innerHTML = historyHTML;
             }
 
-            clearHistory() {
+            async clearHistory() {
                 if (confirm('Are you sure you want to clear all history? This cannot be undone.')) {
                     this.entries = [];
-                    this.saveEntries();
+                    await this.saveEntries();
                     this.updateStats();
                     this.renderHistory();
                     this.showMessage('success', 'All history cleared.');
                 }
             }
 
-            loadEntries() {
+            loadFromLocalStorage() {
                 try {
                     const stored = JSON.parse(localStorage.getItem('quitTrackerEntries') || '[]');
                     return stored.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -709,8 +891,53 @@
                 }
             }
 
-            saveEntries() {
-                localStorage.setItem('quitTrackerEntries', JSON.stringify(this.entries));
+            async saveEntries() {
+                try {
+                    await this.dataStore.saveEntries(this.entries);
+                    // Also save to localStorage as fallback
+                    localStorage.setItem('quitTrackerEntries', JSON.stringify(this.entries));
+                } catch (error) {
+                    console.error('Failed to save to IndexedDB, using localStorage only:', error);
+                    localStorage.setItem('quitTrackerEntries', JSON.stringify(this.entries));
+                }
+            }
+
+            async exportData() {
+                try {
+                    const exportData = await this.dataStore.exportData();
+                    const blob = new Blob([exportData], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `quit-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    this.showMessage('success', 'Data exported successfully! 📤');
+                } catch (error) {
+                    console.error('Export failed:', error);
+                    this.showMessage('warning', 'Export failed. Please try again.');
+                }
+            }
+
+            async importData(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                try {
+                    const text = await file.text();
+                    const importedCount = await this.dataStore.importData(text);
+                    this.entries = await this.dataStore.loadEntries();
+                    this.updateStats();
+                    this.renderHistory();
+                    this.showMessage('success', `Successfully imported ${importedCount} entries! 📥`);
+                } catch (error) {
+                    console.error('Import failed:', error);
+                    this.showMessage('warning', 'Import failed. Please check the file format.');
+                } finally {
+                    event.target.value = '';
+                }
             }
         }
 
