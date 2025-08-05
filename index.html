@@ -296,7 +296,7 @@
             margin-top: 5px;
         }
 
-        .delete-btn {
+        .edit-btn, .delete-btn {
             background: #e53e3e;
             color: white;
             border: none;
@@ -304,6 +304,19 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 12px;
+            margin-left: 4px;
+        }
+
+        .edit-btn {
+            background: #667eea;
+        }
+
+        .edit-btn:hover {
+            background: #5a67d8;
+        }
+
+        .delete-btn:hover {
+            background: #c53030;
         }
 
         .clear-btn {
@@ -462,14 +475,6 @@
             </div>
             <input type="file" id="importFile" accept=".json" style="display: none;">
 
-            <div class="note-section">
-                <textarea 
-                    class="note-input" 
-                    id="noteInput" 
-                    placeholder="Optional: Add a note about this entry (triggers, feelings, situation, etc.)"
-                ></textarea>
-            </div>
-
             <div class="history">
                 <div class="history-header">
                     <h3>Recent Activity</h3>
@@ -484,11 +489,11 @@
         </div>
     </div>
 
-    <!-- Past Entry Modal -->
-    <div id="pastEntryModal" class="modal">
+    <!-- Entry Modal -->
+    <div id="entryModal" class="modal">
         <div class="modal-content">
-            <h3>Add Past Entry</h3>
-            <form id="pastEntryForm">
+            <h3 id="entryModalTitle">Add Entry</h3>
+            <form id="entryForm">
                 <div class="form-group">
                     <label for="entryType">Type:</label>
                     <select id="entryType" required>
@@ -505,12 +510,44 @@
                     <input type="time" id="entryTime" required>
                 </div>
                 <div class="form-group">
-                    <label for="pastNote">Note (optional):</label>
-                    <textarea id="pastNote" placeholder="Add details about this entry..."></textarea>
+                    <label for="entryNote">Note (optional):</label>
+                    <textarea id="entryNote" placeholder="Add details about this entry (triggers, feelings, situation, etc.)..."></textarea>
                 </div>
                 <div class="modal-buttons">
-                    <button type="button" class="btn btn-secondary" id="cancelPastBtn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Entry</button>
+                    <button type="button" class="btn btn-secondary" id="cancelEntryBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="submitEntryBtn">Add Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Entry Modal -->
+    <div id="editEntryModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Entry</h3>
+            <form id="editEntryForm">
+                <div class="form-group">
+                    <label for="editEntryType">Type:</label>
+                    <select id="editEntryType" required>
+                        <option value="craving">Had a Craving</option>
+                        <option value="smoked">I Vaped</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editEntryDate">Date:</label>
+                    <input type="date" id="editEntryDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEntryTime">Time:</label>
+                    <input type="time" id="editEntryTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="editNote">Note (optional):</label>
+                    <textarea id="editNote" placeholder="Add details about this entry..."></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -714,7 +751,6 @@
             initializeElements() {
                 this.cravingBtn = document.getElementById('cravingBtn');
                 this.smokedBtn = document.getElementById('smokedBtn');
-                this.noteInput = document.getElementById('noteInput');
                 this.successMessage = document.getElementById('successMessage');
                 this.warningMessage = document.getElementById('warningMessage');
                 this.historyContainer = document.getElementById('entryHistory');
@@ -734,75 +770,84 @@
                 this.smokeFreeTime = document.getElementById('smokeFreeTime');
                 
                 // Modal elements
-                this.pastEntryModal = document.getElementById('pastEntryModal');
-                this.pastEntryForm = document.getElementById('pastEntryForm');
-                this.cancelPastBtn = document.getElementById('cancelPastBtn');
+                this.entryModal = document.getElementById('entryModal');
+                this.entryForm = document.getElementById('entryForm');
+                this.entryModalTitle = document.getElementById('entryModalTitle');
+                this.submitEntryBtn = document.getElementById('submitEntryBtn');
+                this.cancelEntryBtn = document.getElementById('cancelEntryBtn');
+                this.editEntryModal = document.getElementById('editEntryModal');
+                this.editEntryForm = document.getElementById('editEntryForm');
+                this.cancelEditBtn = document.getElementById('cancelEditBtn');
+                this.currentEditingId = null;
+                this.isEditMode = false;
             }
 
             bindEvents() {
-                this.cravingBtn.addEventListener('click', () => this.recordEntry('craving'));
-                this.smokedBtn.addEventListener('click', () => this.recordEntry('smoked'));
+                this.cravingBtn.addEventListener('click', () => this.showEntryModal('craving'));
+                this.smokedBtn.addEventListener('click', () => this.showEntryModal('smoked'));
                 this.clearBtn.addEventListener('click', () => this.clearHistory());
-                this.addPastBtn.addEventListener('click', () => this.showPastEntryModal());
+                this.addPastBtn.addEventListener('click', () => this.showEntryModal(null, true));
                 this.exportBtn.addEventListener('click', () => this.exportData());
                 this.importBtn.addEventListener('click', () => this.importFile.click());
                 this.importFile.addEventListener('change', (e) => this.importData(e));
                 this.updateBtn.addEventListener('click', () => this.updateApp());
                 this.timelineBtn.addEventListener('click', () => window.location.href = 'timeline.html');
-                this.cancelPastBtn.addEventListener('click', () => this.hidePastEntryModal());
-                this.pastEntryForm.addEventListener('submit', (e) => this.handlePastEntrySubmit(e));
+                this.cancelEntryBtn.addEventListener('click', () => this.hideEntryModal());
+                this.entryForm.addEventListener('submit', (e) => this.handleEntrySubmit(e));
+                this.cancelEditBtn.addEventListener('click', () => this.hideEditEntryModal());
+                this.editEntryForm.addEventListener('submit', (e) => this.handleEditEntrySubmit(e));
                 
                 // Close modal when clicking outside
-                this.pastEntryModal.addEventListener('click', (e) => {
-                    if (e.target === this.pastEntryModal) {
-                        this.hidePastEntryModal();
+                this.entryModal.addEventListener('click', (e) => {
+                    if (e.target === this.entryModal) {
+                        this.hideEntryModal();
+                    }
+                });
+                
+                this.editEntryModal.addEventListener('click', (e) => {
+                    if (e.target === this.editEntryModal) {
+                        this.hideEditEntryModal();
                     }
                 });
             }
 
-            async recordEntry(type) {
+            showEntryModal(type = null, isPastEntry = false) {
                 const now = new Date();
-                const entry = {
-                    id: Date.now(),
-                    type: type,
-                    timestamp: now.toISOString(),
-                    note: this.noteInput.value.trim(),
-                    date: now.toDateString()
-                };
-
-                this.entries.unshift(entry);
-                await this.saveEntries();
-                this.noteInput.value = '';
                 
-                if (type === 'craving') {
-                    this.showMessage('success', 'Craving recorded! Stay strong! 💪');
+                // Set modal title and button text
+                if (isPastEntry) {
+                    this.entryModalTitle.textContent = 'Add Past Entry';
+                    this.submitEntryBtn.textContent = 'Add Entry';
                 } else {
-                    this.showMessage('warning', 'Vaping logged. Remember: every quit attempt gets you closer to success! 🌟');
+                    this.entryModalTitle.textContent = type === 'craving' ? 'Record Craving' : 'Record Vaping';
+                    this.submitEntryBtn.textContent = 'Save Entry';
                 }
                 
-                this.updateStats();
-                this.renderHistory();
-            }
-
-            showPastEntryModal() {
-                const now = new Date();
+                // Pre-fill form
+                if (type) {
+                    document.getElementById('entryType').value = type;
+                }
                 document.getElementById('entryDate').value = now.toISOString().split('T')[0];
                 document.getElementById('entryTime').value = now.toTimeString().slice(0,5);
-                this.pastEntryModal.style.display = 'block';
+                document.getElementById('entryNote').value = '';
+                
+                this.isEditMode = false;
+                this.entryModal.style.display = 'block';
             }
 
-            hidePastEntryModal() {
-                this.pastEntryModal.style.display = 'none';
-                this.pastEntryForm.reset();
+            hideEntryModal() {
+                this.entryModal.style.display = 'none';
+                this.entryForm.reset();
+                this.isEditMode = false;
             }
 
-            async handlePastEntrySubmit(e) {
+            async handleEntrySubmit(e) {
                 e.preventDefault();
                 
                 const type = document.getElementById('entryType').value;
                 const date = document.getElementById('entryDate').value;
                 const time = document.getElementById('entryTime').value;
-                const note = document.getElementById('pastNote').value.trim();
+                const note = document.getElementById('entryNote').value.trim();
                 
                 const timestamp = new Date(`${date}T${time}`);
                 
@@ -822,11 +867,83 @@
                 this.entries.push(entry);
                 this.entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                 await this.saveEntries();
-                this.hidePastEntryModal();
+                this.hideEntryModal();
                 
-                this.showMessage('success', `Past ${type} entry added successfully!`);
+                if (type === 'craving') {
+                    this.showMessage('success', 'Craving recorded! Stay strong! 💪');
+                } else {
+                    this.showMessage('warning', 'Vaping logged. Remember: every quit attempt gets you closer to success! 🌟');
+                }
+                
                 this.updateStats();
                 this.renderHistory();
+            }
+
+
+            showEditEntryModal(entry) {
+                this.currentEditingId = entry.id;
+                const entryDate = new Date(entry.timestamp);
+                
+                document.getElementById('editEntryType').value = entry.type;
+                document.getElementById('editEntryDate').value = entryDate.toISOString().split('T')[0];
+                document.getElementById('editEntryTime').value = entryDate.toTimeString().slice(0,5);
+                document.getElementById('editNote').value = entry.note || '';
+                
+                this.editEntryModal.style.display = 'block';
+            }
+
+            hideEditEntryModal() {
+                this.editEntryModal.style.display = 'none';
+                this.editEntryForm.reset();
+                this.currentEditingId = null;
+            }
+
+            async handleEditEntrySubmit(e) {
+                e.preventDefault();
+                
+                const type = document.getElementById('editEntryType').value;
+                const date = document.getElementById('editEntryDate').value;
+                const time = document.getElementById('editEntryTime').value;
+                const note = document.getElementById('editNote').value.trim();
+                
+                const timestamp = new Date(`${date}T${time}`);
+                
+                if (timestamp > new Date()) {
+                    alert('Cannot set future date/time!');
+                    return;
+                }
+                
+                // Find and update the entry
+                const entryIndex = this.entries.findIndex(e => e.id === this.currentEditingId);
+                if (entryIndex === -1) {
+                    alert('Entry not found!');
+                    return;
+                }
+                
+                this.entries[entryIndex] = {
+                    ...this.entries[entryIndex],
+                    type: type,
+                    timestamp: timestamp.toISOString(),
+                    note: note,
+                    date: timestamp.toDateString()
+                };
+                
+                // Re-sort entries by timestamp
+                this.entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                await this.saveEntries();
+                this.hideEditEntryModal();
+                
+                this.showMessage('success', 'Entry updated successfully!');
+                this.updateStats();
+                this.renderHistory();
+            }
+
+            editEntry(id) {
+                const entry = this.entries.find(e => e.id === id);
+                if (entry) {
+                    this.showEditEntryModal(entry);
+                }
             }
 
             async deleteEntry(id) {
@@ -912,7 +1029,8 @@
                                 <div class="entry-time">${timeString}</div>
                                 <div>
                                     <span class="entry-type ${typeColor}">${typeLabel}</span>
-                                    <button class="delete-btn" onclick="app.deleteEntry(${entry.id})">×</button>
+                                    <button class="edit-btn" onclick="app.editEntry(${entry.id})" title="Edit entry">✏️</button>
+                                    <button class="delete-btn" onclick="app.deleteEntry(${entry.id})" title="Delete entry">×</button>
                                 </div>
                             </div>
                             ${entry.note ? `<div class="entry-note">"${entry.note}"</div>` : ''}

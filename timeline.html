@@ -161,6 +161,8 @@
             position: relative;
             height: 300px;
             margin-bottom: 20px;
+            overflow-x: auto;
+            overflow-y: hidden;
         }
 
         .chart-bars {
@@ -169,6 +171,11 @@
             height: 100%;
             gap: 8px;
             padding: 20px 0;
+            min-width: 100%;
+        }
+
+        .chart-bars.scrollable {
+            min-width: max-content;
         }
 
         .bar-group {
@@ -177,6 +184,11 @@
             flex-direction: column;
             align-items: center;
             gap: 4px;
+            min-width: 60px;
+        }
+
+        .bar-group.day-view {
+            min-width: 40px;
         }
 
         .bar {
@@ -200,9 +212,12 @@
             color: #666;
             text-align: center;
             margin-top: 8px;
+            white-space: nowrap;
+        }
+        
+        .bar-label.rotated {
             transform: rotate(-45deg);
             transform-origin: center;
-            white-space: nowrap;
         }
 
         .bar-value {
@@ -282,6 +297,25 @@
             padding: 40px 20px;
         }
 
+        /* Custom scrollbar for webkit browsers */
+        .chart-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .chart-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .chart-container::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .chart-container::-webkit-scrollbar-thumb:hover {
+            background: #5a67d8;
+        }
+
         @media (max-width: 480px) {
             .container {
                 margin: 0;
@@ -297,8 +331,16 @@
                 font-size: 9px;
             }
 
+            .bar-group.day-view {
+                min-width: 35px;
+            }
+
             .chart-container {
                 height: 250px;
+            }
+
+            .chart-container::-webkit-scrollbar {
+                height: 6px;
             }
         }
     </style>
@@ -575,8 +617,8 @@
                 
                 // Update chart title
                 const titles = {
-                    day: 'Daily Timeline (Last 14 Days)',
-                    week: 'Weekly Timeline (Last 12 Weeks)', 
+                    day: 'Today\'s Activity',
+                    week: 'This Week (Monday - Sunday)', 
                     month: 'Monthly Timeline (Last 12 Months)',
                     year: 'Yearly Timeline'
                 };
@@ -590,19 +632,25 @@
 
                 // Render bars
                 const maxValue = Math.max(...data.map(d => Math.max(d.cravings, d.vaped)));
+                const needsRotation = this.currentPeriod === 'day' || this.currentPeriod === 'month';
+                const needsScrolling = this.currentPeriod === 'day';
+                
+                // Add scrollable class for day view
+                this.chartBars.className = `chart-bars ${needsScrolling ? 'scrollable' : ''}`;
+                
                 const barsHTML = data.map(item => {
                     const cravingsHeight = maxValue > 0 ? (item.cravings / maxValue) * 100 : 0;
                     const vapedHeight = maxValue > 0 ? (item.vaped / maxValue) * 100 : 0;
                     
                     return `
-                        <div class="bar-group">
+                        <div class="bar-group ${this.currentPeriod === 'day' ? 'day-view' : ''}">
                             <div class="bar cravings" style="height: ${cravingsHeight}%">
                                 <div class="bar-value">${item.cravings}</div>
                             </div>
                             <div class="bar vaped" style="height: ${vapedHeight}%">
                                 <div class="bar-value">${item.vaped}</div>
                             </div>
-                            <div class="bar-label">${item.label}</div>
+                            <div class="bar-label ${needsRotation ? 'rotated' : ''}">${item.label}</div>
                         </div>
                     `;
                 }).join('');
@@ -621,37 +669,50 @@
 
                 switch (this.currentPeriod) {
                     case 'day':
-                        for (let i = 13; i >= 0; i--) {
-                            const date = new Date(now);
-                            date.setDate(date.getDate() - i);
-                            const dateString = date.toDateString();
+                        // Show only today's data with hourly breakdown
+                        const today = new Date();
+                        const todayString = today.toDateString();
+                        
+                        // Group today's entries by hour
+                        for (let hour = 0; hour < 24; hour++) {
+                            const hourEntries = this.entries.filter(e => {
+                                if (e.date !== todayString) return false;
+                                const entryHour = new Date(e.timestamp).getHours();
+                                return entryHour === hour;
+                            });
                             
-                            const dayEntries = this.entries.filter(e => e.date === dateString);
+                            const hourLabel = hour === 0 ? '12 AM' : 
+                                            hour < 12 ? `${hour} AM` : 
+                                            hour === 12 ? '12 PM' : 
+                                            `${hour - 12} PM`;
+                            
                             data.push({
-                                label: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                                cravings: dayEntries.filter(e => e.type === 'craving').length,
-                                vaped: dayEntries.filter(e => e.type === 'smoked').length,
-                                date: dateString
+                                label: hourLabel,
+                                cravings: hourEntries.filter(e => e.type === 'craving').length,
+                                vaped: hourEntries.filter(e => e.type === 'smoked').length,
+                                hour: hour
                             });
                         }
                         break;
 
                     case 'week':
-                        for (let i = 11; i >= 0; i--) {
-                            const weekStart = new Date(now);
-                            weekStart.setDate(weekStart.getDate() - (weekStart.getDay() + i * 7));
-                            const weekEnd = new Date(weekStart);
-                            weekEnd.setDate(weekEnd.getDate() + 6);
+                        // Show current week (Monday to Sunday)
+                        const currentDate = new Date(now);
+                        const currentDay = currentDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                        const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay; // Calculate days to Monday
+                        
+                        for (let i = 0; i < 7; i++) {
+                            const weekDay = new Date(currentDate);
+                            weekDay.setDate(currentDate.getDate() + mondayOffset + i);
+                            const weekDayString = weekDay.toDateString();
                             
-                            const weekEntries = this.entries.filter(e => {
-                                const entryDate = new Date(e.timestamp);
-                                return entryDate >= weekStart && entryDate <= weekEnd;
-                            });
+                            const dayEntries = this.entries.filter(e => e.date === weekDayString);
                             
                             data.push({
-                                label: `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
-                                cravings: weekEntries.filter(e => e.type === 'craving').length,
-                                vaped: weekEntries.filter(e => e.type === 'smoked').length
+                                label: weekDay.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+                                cravings: dayEntries.filter(e => e.type === 'craving').length,
+                                vaped: dayEntries.filter(e => e.type === 'smoked').length,
+                                date: weekDayString
                             });
                         }
                         break;
