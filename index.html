@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Craving Tracker</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQ3JhdmluZyBUcmFja2VyIiwic2hvcnRfbmFtZSI6IkNyYXZpbmciLCJzdGFydF91cmwiOiIvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzJkNDA2NyIsInRoZW1lX2NvbG9yIjoiIzM3NDE1NiIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUIzYVdSMGFEMGlNVEk0SWlCb1pXbG5hSFE5SWpFeU9DSWdkbWxsZDBKdmVEMGlNQ0F3SURFMU5pQXhOVFlpSUdobGJHNXpQU0pvZEhSd09pOHZkM2QzTG5jekxtOXlaeTh5TURBd0wzTjJaeUkrUEhKbFkzUWdkMmxrZEdnOUlqRTFOaUlnYUdWcFoyaDBQU0l4TlRZaUlHWnBiR3c5SWlNek56UXhOVFlpTHo0OGRHVjRkQ0I0UFNJM09DSWdlVDBpT0RBaUlIUmxlSFF0WVc1amFHOXlQU0p0YVdSa2JHVWlJR1pwYkd3OUlpTm1abVppWmlJZ1ptOXVkQzF6YVhwbFBTSXlNQ0lnWm05dWRDMTNaV2xuYUhROUltSnZiR1FpUGxOdmNuSjVJRGNyUEM5MFpYaDBQand2YzNabkVUSXhPMmR2ZVd0a2YyTjdjV1J0WTFBNU9YSkVOR1Y0ZEhOREpUVk9PVzg9IiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJzaXplcyI6IjE1NngxNTYifV19">
+    <meta name="theme-color" content="#374156">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #374156, #4a5568);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .main {
+            padding: 30px 20px;
+        }
+
+        .craving-button {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .craving-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+        }
+
+        .craving-button:active {
+            transform: translateY(0);
+        }
+
+        .note-section {
+            margin-bottom: 30px;
+        }
+
+        .note-input {
+            width: 100%;
+            min-height: 80px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .note-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .history {
+            margin-top: 30px;
+        }
+
+        .history h3 {
+            margin-bottom: 15px;
+            color: #374156;
+        }
+
+        .craving-entry {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .entry-time {
+            font-weight: bold;
+            color: #374156;
+            margin-bottom: 5px;
+        }
+
+        .entry-note {
+            color: #666;
+            font-style: italic;
+        }
+
+        .clear-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            background: #48bb78;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .success-message.show {
+            opacity: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #a0aec0;
+            padding: 40px 20px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚭 Craving Tracker</h1>
+            <p>Track your progress, one craving at a time</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number" id="todayCount">0</div>
+                    <div class="stat-label">Today</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="totalCount">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="streakCount">0</div>
+                    <div class="stat-label">Days Tracked</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="success-message" id="successMessage">
+                Craving recorded! You're doing great! 💪
+            </div>
+
+            <button class="craving-button" id="cravingBtn">
+                I'm Having a Craving
+            </button>
+
+            <div class="note-section">
+                <textarea 
+                    class="note-input" 
+                    id="noteInput" 
+                    placeholder="Optional: Add a note about this craving (what triggered it, how you're feeling, etc.)"
+                ></textarea>
+            </div>
+
+            <div class="history">
+                <h3>Recent Cravings</h3>
+                <div id="cravingHistory">
+                    <div class="empty-state">
+                        No cravings recorded yet. When you log your first craving, it will appear here.
+                    </div>
+                </div>
+                <button class="clear-btn" id="clearBtn" style="display: none;">Clear All History</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:application/javascript;base64,Y29uc3QgQ0FDSEVfTkFNRSA9ICdjcmF2aW5nLXRyYWNrZXItdjEnOwpjb25zdCB1cmxzVG9DYWNoZSA9IFsnLyddOwoKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZXZlbnQgPT4gewogIGV2ZW50LndhaXRVbnRpbCgKICAgIGNhY2hlcy5vcGVuKENBQ0hFX05BTUUpCiAgICAgIC50aGVuKGNhY2hlID0+IGNhY2hlLmFkZEFsbCh1cmxzVG9DYWNoZSkpCiAgKTsKfSk7CgpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2ZldGNoJywgZXZlbnQgPT4gewogIGV2ZW50LnJlc3BvbmRXaXRoKAogICAgY2FjaGVzLm1hdGNoKGV2ZW50LnJlcXVlc3QpCiAgICAgIC50aGVuKHJlc3BvbnNlID0+IHsKICAgICAgICByZXR1cm4gcmVzcG9uc2UgfHwgZmV0Y2goZXZlbnQucmVxdWVzdCk7CiAgICAgIH0pCiAgKTsKfSk7')
+                .then(() => console.log('Service Worker registered'))
+                .catch(err => console.log('Service Worker registration failed'));
+        }
+
+        class CravingTracker {
+            constructor() {
+                this.cravings = this.loadCravings();
+                this.initializeElements();
+                this.bindEvents();
+                this.updateStats();
+                this.renderHistory();
+            }
+
+            initializeElements() {
+                this.cravingBtn = document.getElementById('cravingBtn');
+                this.noteInput = document.getElementById('noteInput');
+                this.successMessage = document.getElementById('successMessage');
+                this.historyContainer = document.getElementById('cravingHistory');
+                this.clearBtn = document.getElementById('clearBtn');
+                this.todayCount = document.getElementById('todayCount');
+                this.totalCount = document.getElementById('totalCount');
+                this.streakCount = document.getElementById('streakCount');
+            }
+
+            bindEvents() {
+                this.cravingBtn.addEventListener('click', () => this.recordCraving());
+                this.clearBtn.addEventListener('click', () => this.clearHistory());
+            }
+
+            recordCraving() {
+                const now = new Date();
+                const craving = {
+                    id: Date.now(),
+                    timestamp: now.toISOString(),
+                    note: this.noteInput.value.trim(),
+                    date: now.toDateString()
+                };
+
+                this.cravings.unshift(craving);
+                this.saveCravings();
+                this.noteInput.value = '';
+                this.showSuccessMessage();
+                this.updateStats();
+                this.renderHistory();
+            }
+
+            showSuccessMessage() {
+                this.successMessage.classList.add('show');
+                setTimeout(() => {
+                    this.successMessage.classList.remove('show');
+                }, 3000);
+            }
+
+            updateStats() {
+                const today = new Date().toDateString();
+                const todayCravings = this.cravings.filter(c => c.date === today);
+                
+                this.todayCount.textContent = todayCravings.length;
+                this.totalCount.textContent = this.cravings.length;
+                
+                // Calculate streak (days with at least one craving)
+                const uniqueDates = [...new Set(this.cravings.map(c => c.date))];
+                this.streakCount.textContent = uniqueDates.length;
+            }
+
+            renderHistory() {
+                if (this.cravings.length === 0) {
+                    this.historyContainer.innerHTML = `
+                        <div class="empty-state">
+                            No cravings recorded yet. When you log your first craving, it will appear here.
+                        </div>
+                    `;
+                    this.clearBtn.style.display = 'none';
+                    return;
+                }
+
+                this.clearBtn.style.display = 'block';
+                
+                const historyHTML = this.cravings.slice(0, 10).map(craving => {
+                    const date = new Date(craving.timestamp);
+                    const timeString = date.toLocaleString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    });
+
+                    return `
+                        <div class="craving-entry">
+                            <div class="entry-time">${timeString}</div>
+                            ${craving.note ? `<div class="entry-note">"${craving.note}"</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+
+                this.historyContainer.innerHTML = historyHTML;
+            }
+
+            clearHistory() {
+                if (confirm('Are you sure you want to clear all craving history?')) {
+                    this.cravings = [];
+                    this.saveCravings();
+                    this.updateStats();
+                    this.renderHistory();
+                }
+            }
+
+            loadCravings() {
+                try {
+                    const stored = JSON.parse(localStorage.getItem('smokingCravings') || '[]');
+                    return stored;
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            saveCravings() {
+                localStorage.setItem('smokingCravings', JSON.stringify(this.cravings));
+            }
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            new CravingTracker();
+        });
+
+        // Add to home screen prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // You could show an install button here
+            console.log('PWA install prompt available');
+        });
+    </script>
+</body>
+</html>
