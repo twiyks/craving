@@ -161,6 +161,8 @@
             position: relative;
             height: 300px;
             margin-bottom: 20px;
+            overflow-x: auto;
+            overflow-y: hidden;
         }
 
         .chart-bars {
@@ -169,6 +171,11 @@
             height: 100%;
             gap: 8px;
             padding: 20px 0;
+            min-width: 100%;
+        }
+
+        .chart-bars.scrollable {
+            min-width: max-content;
         }
 
         .bar-group {
@@ -177,6 +184,11 @@
             flex-direction: column;
             align-items: center;
             gap: 4px;
+            min-width: 60px;
+        }
+
+        .bar-group.day-view {
+            min-width: 40px;
         }
 
         .bar {
@@ -285,6 +297,25 @@
             padding: 40px 20px;
         }
 
+        /* Custom scrollbar for webkit browsers */
+        .chart-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .chart-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .chart-container::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .chart-container::-webkit-scrollbar-thumb:hover {
+            background: #5a67d8;
+        }
+
         @media (max-width: 480px) {
             .container {
                 margin: 0;
@@ -300,8 +331,16 @@
                 font-size: 9px;
             }
 
+            .bar-group.day-view {
+                min-width: 35px;
+            }
+
             .chart-container {
                 height: 250px;
+            }
+
+            .chart-container::-webkit-scrollbar {
+                height: 6px;
             }
         }
     </style>
@@ -594,13 +633,17 @@
                 // Render bars
                 const maxValue = Math.max(...data.map(d => Math.max(d.cravings, d.vaped)));
                 const needsRotation = this.currentPeriod === 'day' || this.currentPeriod === 'month';
+                const needsScrolling = this.currentPeriod === 'day';
+                
+                // Add scrollable class for day view
+                this.chartBars.className = `chart-bars ${needsScrolling ? 'scrollable' : ''}`;
                 
                 const barsHTML = data.map(item => {
                     const cravingsHeight = maxValue > 0 ? (item.cravings / maxValue) * 100 : 0;
                     const vapedHeight = maxValue > 0 ? (item.vaped / maxValue) * 100 : 0;
                     
                     return `
-                        <div class="bar-group">
+                        <div class="bar-group ${this.currentPeriod === 'day' ? 'day-view' : ''}">
                             <div class="bar cravings" style="height: ${cravingsHeight}%">
                                 <div class="bar-value">${item.cravings}</div>
                             </div>
