@@ -109,7 +109,7 @@
             box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
         }
 
-        .smoked-button {
+        .vaped-button {
             height: 80px;
             background: linear-gradient(45deg, #2d3748, #4a5568);
             border: none;
@@ -122,11 +122,11 @@
             box-shadow: 0 8px 25px rgba(45, 55, 72, 0.3);
         }
 
-        .craving-button:hover, .smoked-button:hover {
+        .craving-button:hover, .vaped-button:hover {
             transform: translateY(-2px);
         }
 
-        .craving-button:active, .smoked-button:active {
+        .craving-button:active, .vaped-button:active {
             transform: translateY(0);
         }
 
@@ -257,7 +257,7 @@
             border-left: 4px solid #667eea;
         }
 
-        .smoked-entry {
+        .vaped-entry {
             border-left: 4px solid #e53e3e;
             background: #fed7d7;
         }
@@ -286,7 +286,7 @@
             background: #667eea;
         }
 
-        .entry-type.smoked {
+        .entry-type.vaped {
             background: #e53e3e;
         }
 
@@ -352,6 +352,33 @@
             padding: 40px 20px;
         }
 
+        .nav-buttons {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0 0 20px 20px;
+            overflow: hidden;
+        }
+
+        .nav-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
         @media (max-width: 480px) {
             .container {
                 margin: 0;
@@ -389,15 +416,19 @@
                     </div>
                 </div>
                 <div class="stat-group">
-                    <h4>Smoke Free</h4>
+                    <h4>Vape Free</h4>
                     <div class="smoke-free-time" id="smokeFreeTime">0d 0h</div>
                     <div class="stat-row">
                         <div class="stat">
                             <div class="stat-number" id="totalSmoked">0</div>
-                            <div class="stat-label">Total Smoked</div>
+                            <div class="stat-label">Total Vaped</div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn active" id="todayBtn">📊 Today</button>
+                <button class="nav-btn" id="timelineBtn">📈 Timeline</button>
             </div>
         </div>
 
@@ -409,8 +440,8 @@
                 <button class="craving-button" id="cravingBtn">
                     😣 Had a Craving
                 </button>
-                <button class="smoked-button" id="smokedBtn">
-                    🚬 I Smoked
+                <button class="vaped-button" id="smokedBtn">
+                    💨 I Vaped
                 </button>
             </div>
 
@@ -462,7 +493,7 @@
                     <label for="entryType">Type:</label>
                     <select id="entryType" required>
                         <option value="craving">Had a Craving</option>
-                        <option value="smoked">I Smoked</option>
+                        <option value="smoked">I Vaped</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -693,6 +724,8 @@
                 this.importBtn = document.getElementById('importBtn');
                 this.importFile = document.getElementById('importFile');
                 this.updateBtn = document.getElementById('updateBtn');
+                this.todayBtn = document.getElementById('todayBtn');
+                this.timelineBtn = document.getElementById('timelineBtn');
                 
                 // Stats elements
                 this.todayCravings = document.getElementById('todayCravings');
@@ -715,6 +748,7 @@
                 this.importBtn.addEventListener('click', () => this.importFile.click());
                 this.importFile.addEventListener('change', (e) => this.importData(e));
                 this.updateBtn.addEventListener('click', () => this.updateApp());
+                this.timelineBtn.addEventListener('click', () => window.location.href = 'timeline.html');
                 this.cancelPastBtn.addEventListener('click', () => this.hidePastEntryModal());
                 this.pastEntryForm.addEventListener('submit', (e) => this.handlePastEntrySubmit(e));
                 
@@ -743,7 +777,7 @@
                 if (type === 'craving') {
                     this.showMessage('success', 'Craving recorded! Stay strong! 💪');
                 } else {
-                    this.showMessage('warning', 'Smoking logged. Remember: every quit attempt gets you closer to success! 🌟');
+                    this.showMessage('warning', 'Vaping logged. Remember: every quit attempt gets you closer to success! 🌟');
                 }
                 
                 this.updateStats();
@@ -817,19 +851,19 @@
                 const today = new Date().toDateString();
                 const todayCravings = this.entries.filter(e => e.date === today && e.type === 'craving');
                 const totalCravings = this.entries.filter(e => e.type === 'craving');
-                const totalSmoked = this.entries.filter(e => e.type === 'smoked');
+                const totalVaped = this.entries.filter(e => e.type === 'smoked');
                 
                 this.todayCravings.textContent = todayCravings.length;
                 this.totalCravings.textContent = totalCravings.length;
-                this.totalSmoked.textContent = totalSmoked.length;
+                this.totalSmoked.textContent = totalVaped.length;
                 
-                // Calculate smoke-free time
-                const lastSmoked = totalSmoked.length > 0 
-                    ? new Date(totalSmoked[0].timestamp) 
+                // Calculate vape-free time
+                const lastVaped = totalVaped.length > 0 
+                    ? new Date(totalVaped[0].timestamp) 
                     : null;
                 
-                if (lastSmoked) {
-                    const timeDiff = Date.now() - lastSmoked.getTime();
+                if (lastVaped) {
+                    const timeDiff = Date.now() - lastVaped.getTime();
                     const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
                     const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
@@ -868,9 +902,9 @@
                         hour12: true
                     });
 
-                    const typeClass = entry.type === 'craving' ? 'craving-entry' : 'smoked-entry';
-                    const typeLabel = entry.type === 'craving' ? 'CRAVING' : 'SMOKED';
-                    const typeColor = entry.type === 'craving' ? 'craving' : 'smoked';
+                    const typeClass = entry.type === 'craving' ? 'craving-entry' : 'vaped-entry';
+                    const typeLabel = entry.type === 'craving' ? 'CRAVING' : 'VAPED';
+                    const typeColor = entry.type === 'craving' ? 'craving' : 'vaped';
 
                     return `
                         <div class="entry ${typeClass}">
