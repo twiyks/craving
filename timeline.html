@@ -293,6 +293,10 @@
             padding: 20px 0 20px 10px;
             min-width: 100%;
         }
+        
+        .chart-bars:not(.scrollable) {
+            min-width: auto; /* Allow day view to fit without scrolling */
+        }
 
         .chart-bars.scrollable {
             min-width: max-content;
@@ -308,7 +312,7 @@
         }
 
         .bar-group.day-view {
-            min-width: 40px;
+            min-width: 28px;
         }
 
         .bar {
@@ -638,7 +642,7 @@
             }
 
             .bar-group.day-view {
-                min-width: 35px;
+                min-width: 25px;
             }
 
             .chart-container {
