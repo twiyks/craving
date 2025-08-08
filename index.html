@@ -369,6 +369,56 @@
             opacity: 1;
         }
 
+        .intensity-slider-container {
+            margin-top: 10px;
+        }
+
+        .intensity-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+            margin-bottom: 15px;
+        }
+
+        .intensity-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .intensity-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .intensity-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .intensity-value {
+            text-align: center;
+            font-weight: bold;
+            color: #374156;
+            margin-top: 5px;
+        }
+
         .empty-state {
             text-align: center;
             color: #a0aec0;
@@ -561,6 +611,18 @@
                     <label for="entryTime">Time:</label>
                     <input type="time" id="entryTime" required>
                 </div>
+                <div class="form-group" id="intensityGroup">
+                    <label for="entryIntensity">Craving Intensity:</label>
+                    <div class="intensity-slider-container">
+                        <input type="range" id="entryIntensity" min="1" max="3" value="2" class="intensity-slider">
+                        <div class="intensity-labels">
+                            <span class="intensity-label">Mild</span>
+                            <span class="intensity-label">Medium</span>
+                            <span class="intensity-label">Strong</span>
+                        </div>
+                        <div class="intensity-value" id="intensityValue">Medium</div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="entryNote">Note (optional):</label>
                     <textarea id="entryNote" placeholder="Add details about this entry (triggers, feelings, situation, etc.)..."></textarea>
@@ -592,6 +654,18 @@
                 <div class="form-group">
                     <label for="editEntryTime">Time:</label>
                     <input type="time" id="editEntryTime" required>
+                </div>
+                <div class="form-group" id="editIntensityGroup">
+                    <label for="editIntensity">Craving Intensity (optional):</label>
+                    <div class="intensity-slider-container">
+                        <input type="range" id="editIntensity" min="1" max="3" value="2" class="intensity-slider">
+                        <div class="intensity-labels">
+                            <span class="intensity-label">Mild</span>
+                            <span class="intensity-label">Medium</span>
+                            <span class="intensity-label">Strong</span>
+                        </div>
+                        <div class="intensity-value" id="editIntensityValue">Medium</div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="editNote">Note (optional):</label>
@@ -796,6 +870,25 @@
                     this.entries = this.loadFromLocalStorage();
                 }
                 
+                // Handle legacy entries - add default intensity for craving entries without it
+                let hasLegacyEntries = false;
+                this.entries.forEach(entry => {
+                    if (entry.type === 'craving' && entry.intensity === undefined) {
+                        entry.intensity = 2; // Default to medium intensity
+                        hasLegacyEntries = true;
+                    }
+                });
+                
+                // Save updated entries if we modified any legacy entries
+                if (hasLegacyEntries) {
+                    try {
+                        await this.saveEntries();
+                        console.log('Updated legacy entries with default intensity values');
+                    } catch (error) {
+                        console.error('Failed to save legacy entry updates:', error);
+                    }
+                }
+                
                 this.updateStats();
                 this.renderHistory();
             }
@@ -832,6 +925,14 @@
                 this.cancelEditBtn = document.getElementById('cancelEditBtn');
                 this.currentEditingId = null;
                 this.isEditMode = false;
+                
+                // Intensity slider elements
+                this.intensitySlider = document.getElementById('entryIntensity');
+                this.intensityValue = document.getElementById('intensityValue');
+                this.intensityGroup = document.getElementById('intensityGroup');
+                this.editIntensitySlider = document.getElementById('editIntensity');
+                this.editIntensityValue = document.getElementById('editIntensityValue');
+                this.editIntensityGroup = document.getElementById('editIntensityGroup');
             }
 
             bindEvents() {
@@ -861,6 +962,15 @@
                         this.hideEditEntryModal();
                     }
                 });
+                
+                // Intensity slider events
+                this.intensitySlider.addEventListener('input', (e) => this.updateIntensityLabel(e.target.value, this.intensityValue));
+                this.editIntensitySlider.addEventListener('input', (e) => this.updateIntensityLabel(e.target.value, this.editIntensityValue));
+            }
+
+            updateIntensityLabel(value, labelElement) {
+                const labels = ['', 'Mild', 'Medium', 'Strong'];
+                labelElement.textContent = labels[parseInt(value)];
             }
 
             showEntryModal(type = null, isPastEntry = false) {
@@ -873,6 +983,15 @@
                 } else {
                     this.entryModalTitle.textContent = type === 'craving' ? 'Record Craving' : 'Record Vaping';
                     this.submitEntryBtn.textContent = 'Save Entry';
+                }
+                
+                // Show/hide intensity slider based on entry type
+                if (type === 'craving' || (isPastEntry && !type)) {
+                    this.intensityGroup.style.display = 'block';
+                    this.intensitySlider.value = 2;
+                    this.updateIntensityLabel(2, this.intensityValue);
+                } else {
+                    this.intensityGroup.style.display = 'none';
                 }
                 
                 // Pre-fill form
@@ -913,7 +1032,8 @@
                     type: type,
                     timestamp: timestamp.toISOString(),
                     note: note,
-                    date: timestamp.toDateString()
+                    date: timestamp.toDateString(),
+                    intensity: type === 'craving' ? parseInt(document.getElementById('entryIntensity').value) : null
                 };
 
                 this.entries.push(entry);
@@ -940,6 +1060,17 @@
                 document.getElementById('editEntryDate').value = entryDate.toISOString().split('T')[0];
                 document.getElementById('editEntryTime').value = entryDate.toTimeString().slice(0,5);
                 document.getElementById('editNote').value = entry.note || '';
+                
+                // Handle intensity for craving entries
+                const editIntensityGroup = document.getElementById('editIntensityGroup');
+                if (entry.type === 'craving') {
+                    editIntensityGroup.style.display = 'block';
+                    const intensityValue = entry.intensity || 2; // Default to 2 for legacy entries
+                    document.getElementById('editIntensity').value = intensityValue;
+                    this.updateIntensityLabel(intensityValue, this.editIntensityValue);
+                } else {
+                    editIntensityGroup.style.display = 'none';
+                }
                 
                 this.editEntryModal.style.display = 'block';
             }
@@ -977,7 +1108,8 @@
                     type: type,
                     timestamp: timestamp.toISOString(),
                     note: note,
-                    date: timestamp.toDateString()
+                    date: timestamp.toDateString(),
+                    intensity: type === 'craving' ? parseInt(document.getElementById('editIntensity').value) : null
                 };
                 
                 // Re-sort entries by timestamp
