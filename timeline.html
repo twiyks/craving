@@ -142,6 +142,97 @@
             border-color: #667eea;
         }
 
+        .filter-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .filter-btn.active {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .filter-btn:hover:not(.active) {
+            background: #e2e8f0;
+        }
+
+        .date-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 10px;
+        }
+
+        .nav-btn-small {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .nav-btn-small:hover {
+            background: #5a67d8;
+        }
+
+        .date-input {
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #374156;
+            background: white;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .period-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 10px;
+        }
+
+        .period-label {
+            font-weight: bold;
+            color: #374156;
+            font-size: 16px;
+            min-width: 200px;
+            text-align: center;
+        }
+
         .timeline-chart {
             background: #f7fafc;
             border-radius: 15px;
@@ -198,7 +289,7 @@
             display: flex;
             align-items: end;
             height: 260px;
-            gap: 8px;
+            gap: 2px;
             padding: 20px 0 20px 10px;
             min-width: 100%;
         }
@@ -238,6 +329,14 @@
 
         .bar.vaped {
             background: linear-gradient(45deg, #e53e3e, #ff6b6b);
+        }
+
+        .bar.alcohol-cravings {
+            background: linear-gradient(45deg, #9f7aea, #b794f6);
+        }
+
+        .bar.alcohol-consumed {
+            background: linear-gradient(45deg, #d69e2e, #f6ad55);
         }
 
         .bar-label {
@@ -297,9 +396,17 @@
             background: linear-gradient(45deg, #e53e3e, #ff6b6b);
         }
 
+        .legend-color.alcohol-cravings {
+            background: linear-gradient(45deg, #9f7aea, #b794f6);
+        }
+
+        .legend-color.alcohol-consumed {
+            background: linear-gradient(45deg, #d69e2e, #f6ad55);
+        }
+
         .summary-stats {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
             margin-top: 20px;
         }
@@ -330,6 +437,162 @@
             padding: 40px 20px;
         }
 
+        .day-activity {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .day-activity h3 {
+            color: #374156;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .activity-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-entry {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .activity-entry.vaping-craving {
+            border-left-color: #667eea;
+        }
+
+        .activity-entry.vaping-consumed {
+            border-left-color: #e53e3e;
+        }
+
+        .activity-entry.alcohol-craving {
+            border-left-color: #9f7aea;
+        }
+
+        .activity-entry.alcohol-consumed {
+            border-left-color: #d69e2e;
+        }
+
+        .activity-time {
+            font-weight: bold;
+            color: #374156;
+        }
+
+        .activity-type {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .activity-type.vaping-craving {
+            background: #667eea;
+        }
+
+        .activity-type.vaping-consumed {
+            background: #e53e3e;
+        }
+
+        .activity-type.alcohol-craving {
+            background: #9f7aea;
+        }
+
+        .activity-type.alcohol-consumed {
+            background: #d69e2e;
+        }
+
+        .activity-note {
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        /* Line Graph Styles */
+        .line-graph-container {
+            height: 320px;
+            position: relative;
+            background: white;
+            border-radius: 10px;
+            padding: 0;
+        }
+
+        .line-graph-canvas {
+            width: 100%;
+            height: 260px;
+        }
+
+        .line-graph-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding: 0 45px;
+        }
+
+        .line-graph-label {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.2;
+        }
+
+        .line-graph-label .weekday {
+            font-weight: bold;
+            color: #374156;
+        }
+
+        .line-graph-label .date {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .line-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .line-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .line-legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .line-legend-dot.vaping-cravings {
+            background: #667eea;
+        }
+
+        .line-legend-dot.vaping-consumed {
+            background: #e53e3e;
+        }
+
+        .line-legend-dot.alcohol-cravings {
+            background: #9f7aea;
+        }
+
+        .line-legend-dot.alcohol-consumed {
+            background: #d69e2e;
+        }
+
         /* Custom scrollbar for webkit browsers */
         .chart-bars-container::-webkit-scrollbar {
             height: 8px;
@@ -358,6 +621,16 @@
 
             .timeline-controls {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .filter-controls {
+                gap: 6px;
+                margin-bottom: 15px;
+            }
+
+            .filter-btn {
+                padding: 6px 8px;
+                font-size: 11px;
             }
 
             .bar-label {
@@ -435,8 +708,36 @@
                 <button class="period-btn" data-period="year">Year</button>
             </div>
 
+            <div class="filter-controls">
+                <button class="filter-btn active" data-filter="all" id="allFilter">
+                    📊 All Data
+                </button>
+                <button class="filter-btn active" data-filter="vaping" id="vapingFilter">
+                    💨 Vaping
+                </button>
+                <button class="filter-btn active" data-filter="alcohol" id="alcoholFilter">
+                    🍷 Alcohol
+                </button>
+            </div>
+
             <div class="timeline-chart">
                 <div class="chart-title" id="chartTitle">Daily Timeline</div>
+                
+                <!-- Date navigation controls for day view -->
+                <div class="date-navigation" id="dateNavigation" style="display: none;">
+                    <button class="nav-btn-small" id="prevDateBtn">◀</button>
+                    <input type="date" id="selectedDate" class="date-input">
+                    <button class="nav-btn-small" id="nextDateBtn">▶</button>
+                    <button class="nav-btn-small" id="todayDateBtn">Today</button>
+                </div>
+
+                <!-- Period navigation controls for week/month views -->
+                <div class="period-navigation" id="periodNavigation" style="display: none;">
+                    <button class="nav-btn-small" id="prevPeriodBtn">◀ Previous</button>
+                    <span class="period-label" id="periodLabel">Current Period</span>
+                    <button class="nav-btn-small" id="nextPeriodBtn">Next ▶</button>
+                    <button class="nav-btn-small" id="currentPeriodBtn">Current</button>
+                </div>
                 <div class="chart-container">
                     <div class="y-axis" id="yAxis">
                         <!-- Y-axis labels will be generated by JavaScript -->
@@ -452,17 +753,33 @@
                 <div class="legend">
                     <div class="legend-item">
                         <div class="legend-color cravings"></div>
-                        <span>Cravings</span>
+                        <span>Vaping Cravings</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color vaped"></div>
                         <span>Vaped</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color alcohol-cravings"></div>
+                        <span>Alcohol Cravings</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color alcohol-consumed"></div>
+                        <span>Drank</span>
                     </div>
                 </div>
             </div>
 
             <div class="summary-stats" id="summaryStats">
                 <!-- Summary cards will be populated by JavaScript -->
+            </div>
+
+            <!-- Day Activity List (only shown in day view) -->
+            <div class="day-activity" id="dayActivity" style="display: none;">
+                <h3>Activity for Selected Day</h3>
+                <div class="activity-list" id="activityList">
+                    <!-- Activity entries will be populated by JavaScript -->
+                </div>
             </div>
         </div>
     </div>
@@ -582,6 +899,10 @@
                 this.dataStore = new DataStore();
                 this.entries = [];
                 this.currentPeriod = 'day';
+                this.activeFilters = new Set(['vaping', 'alcohol']); // Start with all categories enabled
+                this.selectedDate = new Date(); // Track selected date for day view
+                this.weekOffset = parseInt(sessionStorage.getItem('timelineWeekOffset')) || 0; // Persist across refreshes
+                this.monthOffset = parseInt(sessionStorage.getItem('timelineMonthOffset')) || 0; // Persist across refreshes
                 this.initializeElements();
                 this.bindEvents();
                 this.initializeApp();
@@ -602,6 +923,16 @@
                     this.entries = stored.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                 }
                 
+                // Handle legacy entries - add missing fields for backward compatibility
+                this.entries.forEach(entry => {
+                    if (entry.category === undefined) {
+                        entry.category = 'vaping'; // All existing entries are vaping-related
+                    }
+                    if (entry.type === 'craving' && entry.intensity === undefined) {
+                        entry.intensity = 2; // Default to medium intensity
+                    }
+                });
+                
                 this.updateHeaderStats();
                 this.renderChart();
             }
@@ -613,6 +944,28 @@
                 this.chartBars = document.getElementById('chartBars');
                 this.yAxis = document.getElementById('yAxis');
                 this.summaryStats = document.getElementById('summaryStats');
+                
+                // Filter elements
+                this.allFilter = document.getElementById('allFilter');
+                this.vapingFilter = document.getElementById('vapingFilter');
+                this.alcoholFilter = document.getElementById('alcoholFilter');
+                this.filterBtns = document.querySelectorAll('.filter-btn');
+                
+                // Date navigation elements
+                this.dateNavigation = document.getElementById('dateNavigation');
+                this.selectedDateInput = document.getElementById('selectedDate');
+                this.prevDateBtn = document.getElementById('prevDateBtn');
+                this.nextDateBtn = document.getElementById('nextDateBtn');
+                this.todayDateBtn = document.getElementById('todayDateBtn');
+                this.dayActivity = document.getElementById('dayActivity');
+                this.activityList = document.getElementById('activityList');
+                
+                // Period navigation elements
+                this.periodNavigation = document.getElementById('periodNavigation');
+                this.prevPeriodBtn = document.getElementById('prevPeriodBtn');
+                this.nextPeriodBtn = document.getElementById('nextPeriodBtn');
+                this.currentPeriodBtn = document.getElementById('currentPeriodBtn');
+                this.periodLabel = document.getElementById('periodLabel');
                 
                 // Stats elements
                 this.todayCravings = document.getElementById('todayCravings');
@@ -629,9 +982,103 @@
                         this.periodBtns.forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
                         this.currentPeriod = btn.dataset.period;
+                        
+                        // Reset period offsets when changing periods
+                        this.weekOffset = 0;
+                        this.monthOffset = 0;
+                        
                         this.renderChart();
                     });
                 });
+
+                // Filter event handlers
+                this.allFilter.addEventListener('click', () => this.toggleAllFilters());
+                this.vapingFilter.addEventListener('click', () => this.toggleFilter('vaping'));
+                this.alcoholFilter.addEventListener('click', () => this.toggleFilter('alcohol'));
+
+                // Date navigation event handlers
+                this.selectedDateInput.addEventListener('change', (e) => this.changeSelectedDate(new Date(e.target.value)));
+                this.prevDateBtn.addEventListener('click', () => this.changeSelectedDate(new Date(this.selectedDate.getTime() - 24 * 60 * 60 * 1000)));
+                this.nextDateBtn.addEventListener('click', () => this.changeSelectedDate(new Date(this.selectedDate.getTime() + 24 * 60 * 60 * 1000)));
+                this.todayDateBtn.addEventListener('click', () => this.changeSelectedDate(new Date()));
+
+                // Period navigation event handlers
+                this.prevPeriodBtn.addEventListener('click', () => this.changePeriodOffset(-1));
+                this.nextPeriodBtn.addEventListener('click', () => this.changePeriodOffset(1));
+                this.currentPeriodBtn.addEventListener('click', () => this.resetPeriodOffset());
+            }
+
+            changePeriodOffset(direction) {
+                if (this.currentPeriod === 'week') {
+                    this.weekOffset += direction;
+                    sessionStorage.setItem('timelineWeekOffset', this.weekOffset.toString());
+                } else if (this.currentPeriod === 'month') {
+                    this.monthOffset += direction;
+                    sessionStorage.setItem('timelineMonthOffset', this.monthOffset.toString());
+                }
+                this.renderChart();
+            }
+
+            resetPeriodOffset() {
+                if (this.currentPeriod === 'week') {
+                    this.weekOffset = 0;
+                    sessionStorage.setItem('timelineWeekOffset', '0');
+                } else if (this.currentPeriod === 'month') {
+                    this.monthOffset = 0;
+                    sessionStorage.setItem('timelineMonthOffset', '0');
+                }
+                this.renderChart();
+            }
+
+            changeSelectedDate(newDate) {
+                this.selectedDate = newDate;
+                this.selectedDateInput.value = newDate.toISOString().split('T')[0];
+                this.renderChart();
+                this.renderDayActivity();
+            }
+
+            toggleAllFilters() {
+                if (this.activeFilters.size === 2) {
+                    // If all are active, deactivate all
+                    this.activeFilters.clear();
+                    this.allFilter.classList.remove('active');
+                    this.vapingFilter.classList.remove('active');
+                    this.alcoholFilter.classList.remove('active');
+                } else {
+                    // If not all are active, activate all
+                    this.activeFilters = new Set(['vaping', 'alcohol']);
+                    this.allFilter.classList.add('active');
+                    this.vapingFilter.classList.add('active');
+                    this.alcoholFilter.classList.add('active');
+                }
+                this.renderChart();
+            }
+
+            toggleFilter(filter) {
+                if (this.activeFilters.has(filter)) {
+                    this.activeFilters.delete(filter);
+                    if (filter === 'vaping') {
+                        this.vapingFilter.classList.remove('active');
+                    } else {
+                        this.alcoholFilter.classList.remove('active');
+                    }
+                } else {
+                    this.activeFilters.add(filter);
+                    if (filter === 'vaping') {
+                        this.vapingFilter.classList.add('active');
+                    } else {
+                        this.alcoholFilter.classList.add('active');
+                    }
+                }
+                
+                // Update "All" button state
+                if (this.activeFilters.size === 2) {
+                    this.allFilter.classList.add('active');
+                } else {
+                    this.allFilter.classList.remove('active');
+                }
+                
+                this.renderChart();
             }
 
             updateHeaderStats() {
@@ -673,12 +1120,33 @@
                 
                 // Update chart title
                 const titles = {
-                    day: 'Today\'s Activity',
+                    day: this.currentPeriod === 'day' ? 
+                        `${this.selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} Activity` : 
+                        'Today\'s Activity',
                     week: 'This Week (Monday - Sunday)', 
                     month: 'Monthly Timeline (Last 12 Months)',
                     year: 'Yearly Timeline'
                 };
                 this.chartTitle.textContent = titles[this.currentPeriod];
+
+                // Show/hide navigation controls based on period
+                if (this.currentPeriod === 'day') {
+                    this.dateNavigation.style.display = 'flex';
+                    this.periodNavigation.style.display = 'none';
+                    this.dayActivity.style.display = 'block';
+                    // Initialize selected date input
+                    this.selectedDateInput.value = this.selectedDate.toISOString().split('T')[0];
+                    this.renderDayActivity();
+                } else if (this.currentPeriod === 'week' || this.currentPeriod === 'month') {
+                    this.dateNavigation.style.display = 'none';
+                    this.periodNavigation.style.display = 'flex';
+                    this.dayActivity.style.display = 'none';
+                    this.updatePeriodLabel();
+                } else {
+                    this.dateNavigation.style.display = 'none';
+                    this.periodNavigation.style.display = 'none';
+                    this.dayActivity.style.display = 'none';
+                }
 
                 if (data.length === 0) {
                     this.chartBars.innerHTML = '<div class="empty-state">No data available for the selected period.</div>';
@@ -687,31 +1155,68 @@
                     return;
                 }
 
-                // Calculate max value and render y-axis
-                const maxValue = Math.max(...data.map(d => Math.max(d.cravings, d.vaped)), 1); // Ensure minimum of 1
-                this.renderYAxis(maxValue);
-                const needsRotation = this.currentPeriod === 'day' || this.currentPeriod === 'month';
-                const needsScrolling = this.currentPeriod === 'day';
+                // Calculate max value considering all four categories and active filters
+                const maxValue = Math.max(...data.map(d => {
+                    const values = [];
+                    if (this.activeFilters.has('vaping')) {
+                        values.push(d.vapingCravings, d.vapingConsumed);
+                    }
+                    if (this.activeFilters.has('alcohol')) {
+                        values.push(d.alcoholCravings, d.alcoholConsumed);
+                    }
+                    return Math.max(...values, 0);
+                }), 1); // Ensure minimum of 1
                 
+                this.renderYAxis(maxValue);
+                const needsRotation = this.currentPeriod === 'month'; // Only month needs rotation now
+                const needsScrolling = false; // Remove scrolling to fit 24 hours on screen
+                
+                // Check if we should render a line graph for week view
+                if (this.currentPeriod === 'week') {
+                    this.renderLineGraph(data);
+                    return;
+                }
+
+                // Restore bar chart structure if coming from line graph
+                this.restoreBarChartStructure();
+
                 // Add scrollable class for day view
                 this.chartBars.className = `chart-bars ${needsScrolling ? 'scrollable' : ''}`;
                 
                 const barsHTML = data.map(item => {
                     // Calculate heights in pixels - chart area is ~220px (260px - 40px padding)
                     const chartHeight = 220;
-                    const cravingsHeightPx = (item.cravings / maxValue) * chartHeight;
-                    const vapedHeightPx = (item.vaped / maxValue) * chartHeight;
                     
-                    console.log(`Bar for ${item.label}: cravings=${item.cravings} (${cravingsHeightPx.toFixed(0)}px), vaped=${item.vaped} (${vapedHeightPx.toFixed(0)}px), maxValue=${maxValue}, chartHeight=${chartHeight}`);
+                    // Only show bars for active filters
+                    let barElements = '';
+                    
+                    if (this.activeFilters.has('vaping')) {
+                        const vapingCravingsHeight = (item.vapingCravings / maxValue) * chartHeight;
+                        const vapingConsumedHeight = (item.vapingConsumed / maxValue) * chartHeight;
+                        
+                        if (vapingCravingsHeight > 0) {
+                            barElements += `<div class="bar cravings" style="height: ${vapingCravingsHeight}px;"><div class="bar-value">${item.vapingCravings}</div></div>`;
+                        }
+                        if (vapingConsumedHeight > 0) {
+                            barElements += `<div class="bar vaped" style="height: ${vapingConsumedHeight}px;"><div class="bar-value">${item.vapingConsumed}</div></div>`;
+                        }
+                    }
+                    
+                    if (this.activeFilters.has('alcohol')) {
+                        const alcoholCravingsHeight = (item.alcoholCravings / maxValue) * chartHeight;
+                        const alcoholConsumedHeight = (item.alcoholConsumed / maxValue) * chartHeight;
+                        
+                        if (alcoholCravingsHeight > 0) {
+                            barElements += `<div class="bar alcohol-cravings" style="height: ${alcoholCravingsHeight}px;"><div class="bar-value">${item.alcoholCravings}</div></div>`;
+                        }
+                        if (alcoholConsumedHeight > 0) {
+                            barElements += `<div class="bar alcohol-consumed" style="height: ${alcoholConsumedHeight}px;"><div class="bar-value">${item.alcoholConsumed}</div></div>`;
+                        }
+                    }
                     
                     return `
                         <div class="bar-group ${this.currentPeriod === 'day' ? 'day-view' : ''}">
-                            <div class="bar cravings" style="height: ${cravingsHeightPx}px; ${cravingsHeightPx > 0 ? 'display: block; background: linear-gradient(45deg, #667eea, #764ba2);' : 'display: none;'}">
-                                <div class="bar-value">${item.cravings}</div>
-                            </div>
-                            <div class="bar vaped" style="height: ${vapedHeightPx}px; ${vapedHeightPx > 0 ? 'display: block; background: linear-gradient(45deg, #e53e3e, #ff6b6b);' : 'display: none;'}">
-                                <div class="bar-value">${item.vaped}</div>
-                            </div>
+                            ${barElements}
                             <div class="bar-label ${needsRotation ? 'rotated' : ''}">${item.label}</div>
                         </div>
                     `;
@@ -763,38 +1268,34 @@
 
                 switch (this.currentPeriod) {
                     case 'day':
-                        // Show only today's data with hourly breakdown
-                        const today = new Date();
-                        const todayString = today.toDateString();
+                        // Show selected date's data with hourly breakdown
+                        const selectedDateString = this.selectedDate.toDateString();
                         
-                        console.log('Looking for entries on:', todayString);
+                        console.log('Looking for entries on:', selectedDateString);
                         
-                        // Find all today's entries first
-                        const todaysEntries = this.entries.filter(e => {
+                        // Find all selected date's entries first
+                        const selectedDateEntries = this.entries.filter(e => {
                             const entryDate = new Date(e.timestamp);
                             const entryDateString = entryDate.toDateString();
-                            return entryDateString === todayString;
+                            return entryDateString === selectedDateString;
                         });
                         
-                        console.log('Found', todaysEntries.length, 'entries for today');
-                        console.log('Today\'s entries:', todaysEntries.map(e => ({
+                        console.log('Found', selectedDateEntries.length, 'entries for selected date');
+                        console.log('Selected date\'s entries:', selectedDateEntries.map(e => ({
                             time: new Date(e.timestamp).toLocaleTimeString(),
                             type: e.type,
                             hour: new Date(e.timestamp).getHours()
                         })));
                         
-                        // Group today's entries by hour
+                        // Group selected date's entries by hour
                         for (let hour = 0; hour < 24; hour++) {
-                            const hourEntries = todaysEntries.filter(e => {
+                            const hourEntries = selectedDateEntries.filter(e => {
                                 const entryDate = new Date(e.timestamp);
                                 const entryHour = entryDate.getHours();
                                 return entryHour === hour;
                             });
                             
-                            const hourLabel = hour === 0 ? '12 AM' : 
-                                            hour < 12 ? `${hour} AM` : 
-                                            hour === 12 ? '12 PM' : 
-                                            `${hour - 12} PM`;
+                            const hourLabel = hour.toString().padStart(2, '0');
                             
                             const cravingsCount = hourEntries.filter(e => e.type === 'craving').length;
                             const vapedCount = hourEntries.filter(e => e.type === 'smoked').length;
@@ -805,16 +1306,19 @@
                             
                             data.push({
                                 label: hourLabel,
-                                cravings: cravingsCount,
-                                vaped: vapedCount,
+                                vapingCravings: hourEntries.filter(e => e.type === 'craving' && e.category === 'vaping').length,
+                                vapingConsumed: hourEntries.filter(e => e.type === 'smoked' && e.category === 'vaping').length,
+                                alcoholCravings: hourEntries.filter(e => e.type === 'craving' && e.category === 'alcohol').length,
+                                alcoholConsumed: hourEntries.filter(e => e.type === 'smoked' && e.category === 'alcohol').length,
                                 hour: hour
                             });
                         }
                         break;
 
                     case 'week':
-                        // Show current week (Monday to Sunday)
+                        // Show selected week (Monday to Sunday) based on weekOffset
                         const currentDate = new Date(now);
+                        currentDate.setDate(currentDate.getDate() + (this.weekOffset * 7)); // Apply week offset
                         const currentDay = currentDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
                         const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay; // Calculate days to Monday
                         
@@ -830,29 +1334,50 @@
                             
                             data.push({
                                 label: weekDay.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
-                                cravings: dayEntries.filter(e => e.type === 'craving').length,
-                                vaped: dayEntries.filter(e => e.type === 'smoked').length,
+                                vapingCravings: dayEntries.filter(e => e.type === 'craving' && e.category === 'vaping').length,
+                                vapingConsumed: dayEntries.filter(e => e.type === 'smoked' && e.category === 'vaping').length,
+                                alcoholCravings: dayEntries.filter(e => e.type === 'craving' && e.category === 'alcohol').length,
+                                alcoholConsumed: dayEntries.filter(e => e.type === 'smoked' && e.category === 'alcohol').length,
                                 date: weekDayString
                             });
                         }
                         break;
 
                     case 'month':
-                        for (let i = 11; i >= 0; i--) {
-                            const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                            const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
-                            const monthEnd = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+                        // Find the earliest entry to determine starting month
+                        if (this.entries.length > 0) {
+                            const earliestEntry = new Date(this.entries[this.entries.length - 1].timestamp); // entries are sorted newest first
+                            const earliestMonth = new Date(earliestEntry.getFullYear(), earliestEntry.getMonth(), 1);
                             
-                            const monthEntries = this.entries.filter(e => {
-                                const entryDate = new Date(e.timestamp);
-                                return entryDate >= monthStart && entryDate <= monthEnd;
-                            });
+                            // Calculate months from earliest to current
+                            const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                            const monthsDiff = (currentMonth.getFullYear() - earliestMonth.getFullYear()) * 12 + 
+                                             (currentMonth.getMonth() - earliestMonth.getMonth());
                             
-                            data.push({
-                                label: monthDate.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
-                                cravings: monthEntries.filter(e => e.type === 'craving').length,
-                                vaped: monthEntries.filter(e => e.type === 'smoked').length
-                            });
+                            // Show all months that have data, but cap at 24 months for performance
+                            const monthsToShow = Math.min(monthsDiff + 1, 24);
+                            
+                            for (let i = monthsToShow - 1; i >= 0; i--) {
+                                const monthDate = new Date(now.getFullYear(), now.getMonth() - i + this.monthOffset, 1);
+                                const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+                                const monthEnd = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+                                
+                                const monthEntries = this.entries.filter(e => {
+                                    const entryDate = new Date(e.timestamp);
+                                    return entryDate >= monthStart && entryDate <= monthEnd;
+                                });
+                                
+                                // Only add months that have data or are recent (last 3 months)
+                                if (monthEntries.length > 0 || i <= 2) {
+                                    data.push({
+                                        label: monthDate.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
+                                        vapingCravings: monthEntries.filter(e => e.type === 'craving' && e.category === 'vaping').length,
+                                        vapingConsumed: monthEntries.filter(e => e.type === 'smoked' && e.category === 'vaping').length,
+                                        alcoholCravings: monthEntries.filter(e => e.type === 'craving' && e.category === 'alcohol').length,
+                                        alcoholConsumed: monthEntries.filter(e => e.type === 'smoked' && e.category === 'alcohol').length
+                                    });
+                                }
+                            }
                         }
                         break;
 
@@ -862,8 +1387,10 @@
                             const yearEntries = this.entries.filter(e => new Date(e.timestamp).getFullYear() === year);
                             data.push({
                                 label: year.toString(),
-                                cravings: yearEntries.filter(e => e.type === 'craving').length,
-                                vaped: yearEntries.filter(e => e.type === 'smoked').length
+                                vapingCravings: yearEntries.filter(e => e.type === 'craving' && e.category === 'vaping').length,
+                                vapingConsumed: yearEntries.filter(e => e.type === 'smoked' && e.category === 'vaping').length,
+                                alcoholCravings: yearEntries.filter(e => e.type === 'craving' && e.category === 'alcohol').length,
+                                alcoholConsumed: yearEntries.filter(e => e.type === 'smoked' && e.category === 'alcohol').length
                             });
                         });
                         break;
@@ -873,36 +1400,339 @@
             }
 
             renderSummaryStats(data) {
-                const totalCravings = data.reduce((sum, item) => sum + item.cravings, 0);
-                const totalVaped = data.reduce((sum, item) => sum + item.vaped, 0);
-                const avgCravings = data.length > 0 ? (totalCravings / data.length).toFixed(1) : 0;
-                const avgVaped = data.length > 0 ? (totalVaped / data.length).toFixed(1) : 0;
-
-                const periodLabels = {
-                    day: 'Daily',
-                    week: 'Weekly', 
-                    month: 'Monthly',
-                    year: 'Yearly'
+                // Calculate totals for all categories
+                const totals = {
+                    vapingCravings: data.reduce((sum, item) => sum + item.vapingCravings, 0),
+                    vapingConsumed: data.reduce((sum, item) => sum + item.vapingConsumed, 0),
+                    alcoholCravings: data.reduce((sum, item) => sum + item.alcoholCravings, 0),
+                    alcoholConsumed: data.reduce((sum, item) => sum + item.alcoholConsumed, 0)
                 };
 
-                this.summaryStats.innerHTML = `
-                    <div class="summary-card">
-                        <div class="summary-number">${totalCravings}</div>
-                        <div class="summary-label">Total Cravings</div>
+                const periodLabels = {
+                    day: 'Today',
+                    week: 'This Week', 
+                    month: 'This Period',
+                    year: 'This Period'
+                };
+
+                // Only show cards for active filters
+                let cardsHTML = '';
+                
+                if (this.activeFilters.has('vaping')) {
+                    cardsHTML += `
+                        <div class="summary-card">
+                            <div class="summary-number">${totals.vapingCravings}</div>
+                            <div class="summary-label">Vaping Cravings ${periodLabels[this.currentPeriod]}</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-number">${totals.vapingConsumed}</div>
+                            <div class="summary-label">Vaped ${periodLabels[this.currentPeriod]}</div>
+                        </div>
+                    `;
+                }
+                
+                if (this.activeFilters.has('alcohol')) {
+                    cardsHTML += `
+                        <div class="summary-card">
+                            <div class="summary-number">${totals.alcoholCravings}</div>
+                            <div class="summary-label">Alcohol Cravings ${periodLabels[this.currentPeriod]}</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-number">${totals.alcoholConsumed}</div>
+                            <div class="summary-label">Drank ${periodLabels[this.currentPeriod]}</div>
+                        </div>
+                    `;
+                }
+
+                this.summaryStats.innerHTML = cardsHTML;
+            }
+
+            restoreBarChartStructure() {
+                const chartContainer = document.querySelector('.chart-container');
+                if (!chartContainer) return;
+                
+                // Check if we need to restore the original bar chart structure
+                if (!document.getElementById('chartBars')) {
+                    chartContainer.innerHTML = `
+                        <div class="y-axis" id="yAxis">
+                            <!-- Y-axis labels will be generated by JavaScript -->
+                        </div>
+                        <div class="chart-bars-container">
+                            <div class="chart-bars" id="chartBars">
+                                <div class="empty-state">
+                                    No data available for the selected period.
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    // Update references
+                    this.chartBars = document.getElementById('chartBars');
+                    this.yAxis = document.getElementById('yAxis');
+                }
+            }
+
+            renderLineGraph(data) {
+                // Create line graph HTML structure
+                const maxValue = Math.max(...data.map(d => {
+                    const values = [];
+                    if (this.activeFilters.has('vaping')) {
+                        values.push(d.vapingCravings, d.vapingConsumed);
+                    }
+                    if (this.activeFilters.has('alcohol')) {
+                        values.push(d.alcoholCravings, d.alcoholConsumed);
+                    }
+                    return Math.max(...values, 0);
+                }), 1);
+
+                // Create labels with weekday and date on separate lines
+                const labelsHTML = data.map(item => {
+                    const date = new Date(item.date);
+                    const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
+                    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    
+                    return `
+                        <div class="line-graph-label">
+                            <div class="weekday">${weekday}</div>
+                            <div class="date">${dateStr}</div>
+                        </div>
+                    `;
+                }).join('');
+
+
+                // Always recreate the line graph structure to ensure fresh canvas
+                const chartContainer = document.querySelector('.chart-container') || this.chartBars?.parentElement;
+                if (!chartContainer) {
+                    console.error('Chart container not found!');
+                    return;
+                }
+                chartContainer.innerHTML = `
+                    <div class="y-axis" id="yAxis">
+                        <!-- Y-axis labels will be generated by canvas drawing -->
                     </div>
-                    <div class="summary-card">
-                        <div class="summary-number">${totalVaped}</div>
-                        <div class="summary-label">Total Vaped</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-number">${avgCravings}</div>
-                        <div class="summary-label">Avg ${periodLabels[this.currentPeriod]} Cravings</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-number">${avgVaped}</div>
-                        <div class="summary-label">Avg ${periodLabels[this.currentPeriod]} Vaped</div>
+                    <div class="chart-bars-container">
+                        <div class="line-graph-container">
+                            <canvas class="line-graph-canvas" id="lineCanvas" width="400" height="260"></canvas>
+                            <div class="line-graph-labels">
+                                ${labelsHTML}
+                            </div>
+                        </div>
                     </div>
                 `;
+                
+                // Update the chartBars reference since we replaced the HTML
+                this.chartBars = chartContainer.querySelector('#chartBars') || chartContainer;
+                
+                // Render Y-axis labels like the bar chart does
+                this.renderYAxis(maxValue);
+
+                // Draw the line graph on canvas
+                setTimeout(() => {
+                    this.drawLineGraph(data, maxValue);
+                }, 100);
+            }
+
+            drawLineGraph(data, maxValue) {
+                const canvas = document.getElementById('lineCanvas');
+                if (!canvas) {
+                    // Canvas not ready yet, try again
+                    setTimeout(() => this.drawLineGraph(data, maxValue), 50);
+                    return;
+                }
+                
+                
+                // Force canvas to refresh its dimensions
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * 2; // High DPI
+                canvas.height = rect.height * 2; // High DPI
+                
+                const ctx = canvas.getContext('2d');
+                ctx.scale(2, 2); // Scale back down
+                
+                const width = canvas.width;
+                const height = canvas.height;
+                
+                const padding = 45;
+                const graphWidth = rect.width - (padding * 2);
+                const graphHeight = rect.height - (padding * 2);
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, rect.width, rect.height);
+                
+                
+                // Draw grid lines
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1;
+                
+                // Horizontal grid lines
+                for (let i = 0; i <= 5; i++) {
+                    const y = padding + (i * graphHeight / 5);
+                    ctx.beginPath();
+                    ctx.moveTo(padding, y);
+                    ctx.lineTo(padding + graphWidth, y);
+                    ctx.stroke();
+                }
+                
+                // Vertical grid lines - center them with data points
+                for (let i = 0; i < data.length; i++) {
+                    const segmentWidth = graphWidth / data.length;
+                    const x = padding + (i * segmentWidth) + (segmentWidth / 2);
+                    ctx.beginPath();
+                    ctx.moveTo(x, padding);
+                    ctx.lineTo(x, padding + graphHeight);
+                    ctx.stroke();
+                }
+                
+                // Draw lines for each category
+                const colors = {
+                    vapingCravings: '#667eea',
+                    vapingConsumed: '#e53e3e',
+                    alcoholCravings: '#9f7aea',
+                    alcoholConsumed: '#d69e2e'
+                };
+                
+                const categories = [];
+                if (this.activeFilters.has('vaping')) {
+                    categories.push('vapingCravings', 'vapingConsumed');
+                }
+                if (this.activeFilters.has('alcohol')) {
+                    categories.push('alcoholCravings', 'alcoholConsumed');
+                }
+                
+                
+                
+                categories.forEach(category => {
+                    ctx.strokeStyle = colors[category];
+                    ctx.fillStyle = colors[category];
+                    ctx.lineWidth = 3;
+                    
+                    ctx.beginPath();
+                    data.forEach((item, index) => {
+                        // Center data points within each day segment for better label alignment
+                        const segmentWidth = graphWidth / data.length;
+                        const x = padding + (index * segmentWidth) + (segmentWidth / 2);
+                        const value = item[category] || 0;
+                        const y = padding + graphHeight - (value / maxValue * graphHeight);
+                        
+                        if (index === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    });
+                    ctx.stroke();
+                    
+                    // Draw dots on data points
+                    data.forEach((item, index) => {
+                        const segmentWidth = graphWidth / data.length;
+                        const x = padding + (index * segmentWidth) + (segmentWidth / 2);
+                        const value = item[category] || 0;
+                        const y = padding + graphHeight - (value / maxValue * graphHeight);
+                        
+                        if (value > 0) {
+                            ctx.beginPath();
+                            ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                            ctx.fill();
+                        }
+                    });
+                });
+                
+                // Draw Y-axis labels on canvas with proper scaling
+                ctx.fillStyle = '#666';
+                ctx.font = '11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                
+                // Use smarter step calculation like the bar charts do
+                const getStepSize = (max) => {
+                    if (max <= 1) return 1;
+                    if (max <= 5) return 1;
+                    if (max <= 10) return 2;
+                    if (max <= 25) return 5;
+                    if (max <= 50) return 10;
+                    if (max <= 100) return 20;
+                    return Math.ceil(max / 5);
+                };
+                
+                const stepSize = getStepSize(maxValue);
+                const steps = Math.ceil(maxValue / stepSize);
+                
+                // Draw from 0 at bottom to maxValue at top
+                for (let i = 0; i <= steps; i++) {
+                    const value = i * stepSize;
+                    const y = padding + graphHeight - (value / maxValue * graphHeight);
+                    if (value <= maxValue) {
+                        ctx.fillText(value.toString(), padding - 10, y);
+                    }
+                }
+            }
+
+            renderDayActivity() {
+                const selectedDateString = this.selectedDate.toDateString();
+                const selectedDateEntries = this.entries.filter(e => {
+                    const entryDate = new Date(e.timestamp);
+                    return entryDate.toDateString() === selectedDateString;
+                }).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Most recent first
+
+                if (selectedDateEntries.length === 0) {
+                    this.activityList.innerHTML = `
+                        <div class="empty-state">
+                            No activity recorded for ${this.selectedDate.toLocaleDateString()}.
+                        </div>
+                    `;
+                    return;
+                }
+
+                const activityHTML = selectedDateEntries.map(entry => {
+                    const entryDate = new Date(entry.timestamp);
+                    const timeString = entryDate.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    });
+
+                    // Determine entry class and type label
+                    const entryClass = `${entry.category}-${entry.type === 'craving' ? 'craving' : 'consumed'}`;
+                    const typeClass = entryClass;
+                    
+                    let typeLabel = '';
+                    if (entry.category === 'vaping') {
+                        typeLabel = entry.type === 'craving' ? 'VAPING CRAVING' : 'VAPED';
+                    } else {
+                        typeLabel = entry.type === 'craving' ? 'ALCOHOL CRAVING' : 'DRANK';
+                    }
+
+                    return `
+                        <div class="activity-entry ${entryClass}">
+                            <div>
+                                <div class="activity-time">${timeString}</div>
+                                ${entry.note ? `<div class="activity-note">${entry.note}</div>` : ''}
+                            </div>
+                            <div class="activity-type ${typeClass}">${typeLabel}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                this.activityList.innerHTML = activityHTML;
+            }
+
+            updatePeriodLabel() {
+                const now = new Date();
+                
+                if (this.currentPeriod === 'week') {
+                    const weekDate = new Date(now);
+                    weekDate.setDate(weekDate.getDate() + (this.weekOffset * 7));
+                    const currentDay = weekDate.getDay();
+                    const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+                    const monday = new Date(weekDate);
+                    monday.setDate(weekDate.getDate() + mondayOffset);
+                    const sunday = new Date(monday);
+                    sunday.setDate(monday.getDate() + 6);
+                    
+                    this.periodLabel.textContent = `${monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${sunday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+                } else if (this.currentPeriod === 'month') {
+                    const monthDate = new Date(now.getFullYear(), now.getMonth() + this.monthOffset, 1);
+                    this.periodLabel.textContent = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                }
             }
         }
 
