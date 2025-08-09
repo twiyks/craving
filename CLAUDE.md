@@ -40,8 +40,10 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 ## Key Features
 
 ### Main Interface (index.html)
+- **Dual category support**: Tab-based interface for vaping (💨) and alcohol (🍷) tracking
 - **Modal-based entry creation**: All entries created through modal with date/time/note fields
-- **Entry editing**: Edit any previous entry (date, time, type, note)
+- **Craving intensity slider**: 3-level intensity scale (Mild, Medium, Strong) for cravings
+- **Entry editing**: Edit any previous entry (date, time, type, note, intensity)
 - **Navigation**: Seamless switching between Today and Timeline views
 - **Export/import data**: JSON backup and restore functionality
 - **Auto-update from GitHub**: Updates app while preserving user data
@@ -49,6 +51,8 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 
 ### Timeline Analytics (timeline.html)
 - **Multiple time views**: Day (hourly), Week (daily), Month (monthly), Year (yearly)
+- **Dual visualization modes**: Bar charts for most views, line graph for week view
+- **Category filtering**: Toggle buttons for vaping, alcohol, or both categories
 - **Proportional bar charts**: Bar heights accurately reflect data quantities
 - **Fixed y-axis**: Numerical scale stays visible during horizontal scrolling
 - **Data aggregation**: Smart grouping by time periods with accurate filtering
@@ -71,11 +75,13 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 ### Entry Data Structure
 ```javascript
 {
-  id: timestamp,           // Unique identifier
-  type: 'craving'|'smoked', // Entry type
-  timestamp: ISO_string,    // Full date/time
-  note: string,            // Optional user note
-  date: date_string        // Cached toDateString() for filtering
+  id: timestamp,                    // Unique identifier
+  type: 'craving'|'smoked',         // Entry type
+  category: 'vaping'|'alcohol',     // Entry category
+  timestamp: ISO_string,            // Full date/time
+  note: string,                     // Optional user note
+  date: date_string,                // Cached toDateString() for filtering
+  intensity: 1|2|3                  // Craving intensity (1=Mild, 2=Medium, 3=Strong) - only for cravings
 }
 ```
 
@@ -84,6 +90,24 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - **Button layout**: Prevents wrapping with flexbox entry-actions container
 - **Touch targets**: Minimum button sizes maintained
 - **Responsive text**: Smaller fonts on mobile while maintaining readability
+
+### Dual Category System
+- **Category tabs**: Main interface uses tabs to switch between vaping and alcohol tracking
+- **Category persistence**: Selected category is maintained across sessions
+- **Automatic categorization**: All entries automatically tagged with active category
+- **Legacy migration**: Existing entries without category default to 'vaping'
+
+### Craving Intensity System
+- **3-level scale**: Mild (1), Medium (2), Strong (3) intensity ratings
+- **Visual slider**: Range input with labeled scale for easy selection
+- **Default values**: New cravings default to Medium (2), legacy cravings auto-migrated
+- **Conditional display**: Intensity slider only shown for craving entries
+
+### Timeline Filtering & Visualization
+- **Category filters**: Toggle buttons for All, Vaping, Alcohol with active state styling
+- **Dual chart types**: Bar charts for day/month/year views, line graph for week view
+- **Color coding**: Each category has distinct color scheme (vaping: blue/red, alcohol: purple/orange)
+- **Dynamic switching**: Chart type changes automatically based on selected time period
 
 ### Navigation Pattern
 - Both pages share identical header with navigation buttons
@@ -101,17 +125,32 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 
 ## Common Development Tasks
 
+### Adding New Categories
+1. Add new category option to tab buttons in index.html
+2. Update category validation in entry creation logic
+3. Add color scheme to timeline.html CSS for new category
+4. Update filtering logic in `TimelineView` class
+
 ### Adding New Time Periods to Timeline
 1. Add case to `aggregateData()` switch statement
 2. Update `titles` object in `renderChart()`
 3. Add button to timeline controls if needed
+4. Consider if new period should use bar chart or line graph
 
 ### Modifying Chart Scaling
 - Bar heights calculated in `renderChart()` method
 - Key formula: `(item.count / maxValue) * 220` for pixel heights
 - Y-axis labels generated in `renderYAxis()` with smart step sizes
+- Week view uses `renderLineGraph()` instead of bar chart
+
+### Working with Intensity Data
+- Intensity values: 1 (Mild), 2 (Medium), 3 (Strong)
+- Only applies to craving entries (`type: 'craving'`)
+- Legacy entries auto-migrate to intensity 2
+- Slider component has CSS classes: `.intensity-slider`, `.intensity-labels`, `.intensity-value`
 
 ### Data Migration
-- Check `initializeApp()` methods in both classes
-- Update backup/restore logic handles new data fields
+- Check `initializeApp()` methods in both classes for auto-migration logic
+- Update backup/restore logic handles new data fields (category, intensity)
 - Test import/export maintains data integrity
+- Legacy entries get default category 'vaping' and intensity 2 for cravings
