@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Craving Tracker** - a Progressive Web App (PWA) for vaping cessation progress. It's a two-page application built with vanilla HTML, CSS, and JavaScript that helps users log cravings and vaping incidents with comprehensive timeline analytics.
+This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessation progress. It's a two-page application built with vanilla HTML, CSS, and JavaScript that helps users log cravings and consumption incidents for both vaping and alcohol with comprehensive timeline analytics.
 
 ## Architecture
 
