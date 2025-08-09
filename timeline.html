@@ -1042,45 +1042,24 @@
             }
 
             toggleAllFilters() {
-                if (this.activeFilters.size === 2) {
-                    // If all are active, deactivate all
-                    this.activeFilters.clear();
-                    this.allFilter.classList.remove('active');
-                    this.vapingFilter.classList.remove('active');
-                    this.alcoholFilter.classList.remove('active');
-                } else {
-                    // If not all are active, activate all
-                    this.activeFilters = new Set(['vaping', 'alcohol']);
-                    this.allFilter.classList.add('active');
-                    this.vapingFilter.classList.add('active');
-                    this.alcoholFilter.classList.add('active');
-                }
+                // Set both categories active and update button states
+                this.activeFilters = new Set(['vaping', 'alcohol']);
+                this.allFilter.classList.add('active');
+                this.vapingFilter.classList.remove('active');
+                this.alcoholFilter.classList.remove('active');
+                
                 this.renderChart();
             }
 
             toggleFilter(filter) {
-                if (this.activeFilters.has(filter)) {
-                    this.activeFilters.delete(filter);
-                    if (filter === 'vaping') {
-                        this.vapingFilter.classList.remove('active');
-                    } else {
-                        this.alcoholFilter.classList.remove('active');
-                    }
-                } else {
-                    this.activeFilters.add(filter);
-                    if (filter === 'vaping') {
-                        this.vapingFilter.classList.add('active');
-                    } else {
-                        this.alcoholFilter.classList.add('active');
-                    }
-                }
+                // Clear all active filters and set only the selected one
+                this.activeFilters.clear();
+                this.activeFilters.add(filter);
                 
-                // Update "All" button state
-                if (this.activeFilters.size === 2) {
-                    this.allFilter.classList.add('active');
-                } else {
-                    this.allFilter.classList.remove('active');
-                }
+                // Update button states - only the selected filter is active
+                this.vapingFilter.classList.toggle('active', filter === 'vaping');
+                this.alcoholFilter.classList.toggle('active', filter === 'alcohol');
+                this.allFilter.classList.remove('active');
                 
                 this.renderChart();
             }
