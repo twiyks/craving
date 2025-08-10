@@ -808,6 +808,20 @@
                                 </div>
                             </div>
                         </div>
+                         <div class="burger-section">
+                             <h4>Display Options</h4>
+                             <div class="category-toggles">
+                                 <div class="toggle-item">
+                                     <div class="toggle-label">
+                                         <span>📝</span>
+                                         <span>Show Notes</span>
+                                     </div>
+                                     <div class="toggle-switch active" id="notesToggle">
+                                         <div class="toggle-slider"></div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
                     </div>
                 </div>
             </div>
@@ -1135,6 +1149,7 @@
                     vaping: true,
                     alcohol: true
                 };
+                 this.showNotes = true;
                 this.updatingVisibility = false;
                 this.initializeElements();
                 this.bindEvents();
@@ -1205,10 +1220,12 @@
                 }
                 
                 this.loadCategoryVisibilitySettings(); // Load category visibility settings
+                this.loadNotesSetting();
                 this.updateButtonsForCategory(); // Initialize buttons for default category
                 this.updateStats();
                 this.renderHistory();
                 this.updateCategoryVisibility(); // Apply visibility settings
+                this.updateNotesToggleUI();
             }
 
             initializeElements() {
@@ -1236,6 +1253,7 @@
                 this.burgerUpdateBtn = document.getElementById('burgerUpdateBtn');
                 this.vapingToggle = document.getElementById('vapingToggle');
                 this.alcoholToggle = document.getElementById('alcoholToggle');
+                this.notesToggle = document.getElementById('notesToggle');
                 
                 // Tab elements
                 this.vapingTab = document.getElementById('vapingTab');
@@ -1313,6 +1331,9 @@
                 this.burgerCloseBtn.addEventListener('click', () => this.closeBurgerMenu());
                 this.vapingToggle.addEventListener('click', () => this.toggleCategoryVisibility('vaping'));
                 this.alcoholToggle.addEventListener('click', () => this.toggleCategoryVisibility('alcohol'));
+                if (this.notesToggle) {
+                    this.notesToggle.addEventListener('click', () => this.toggleNotesVisibility());
+                }
             }
 
             switchCategory(category) {
@@ -1639,12 +1660,45 @@
                                     <button class="delete-btn" onclick="app.deleteEntry(${entry.id})" title="Delete entry">×</button>
                                 </div>
                             </div>
-                            ${entry.note ? `<div class="entry-note">"${entry.note}"</div>` : ''}
+                            ${this.showNotes && entry.note ? `<div class="entry-note">"${entry.note}"</div>` : ''}
                         </div>
                     `;
                 }).join('');
 
                 this.historyContainer.innerHTML = historyHTML;
+            }
+
+            // Notes visibility preference
+            loadNotesSetting() {
+                try {
+                    const saved = localStorage.getItem('showNotes');
+                    if (saved !== null) {
+                        this.showNotes = JSON.parse(saved) === true;
+                    }
+                } catch (e) {
+                    this.showNotes = true;
+                }
+            }
+
+            saveNotesSetting() {
+                try {
+                    localStorage.setItem('showNotes', JSON.stringify(this.showNotes));
+                } catch (e) {
+                    // noop
+                }
+            }
+
+            updateNotesToggleUI() {
+                if (this.notesToggle) {
+                    this.notesToggle.classList.toggle('active', this.showNotes === true);
+                }
+            }
+
+            toggleNotesVisibility() {
+                this.showNotes = !this.showNotes;
+                this.saveNotesSetting();
+                this.updateNotesToggleUI();
+                this.renderHistory();
             }
 
             async clearHistory() {

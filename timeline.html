@@ -1094,6 +1094,20 @@
                                 </div>
                             </div>
                         </div>
+                         <div class="burger-section">
+                             <h4>Display Options</h4>
+                             <div class="category-toggles">
+                                 <div class="toggle-item">
+                                     <div class="toggle-label">
+                                         <span>📝</span>
+                                         <span>Show Notes</span>
+                                     </div>
+                                     <div class="toggle-switch active" id="notesToggle">
+                                         <div class="toggle-slider"></div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
                     </div>
                 </div>
             </div>
@@ -1420,6 +1434,7 @@
                     alcohol: true
                 };
                 this.updatingVisibility = false;
+                this.showNotes = true;
                 this.currentEditingId = null;
                 this.initializeElements();
                 this.bindEvents();
@@ -1452,9 +1467,11 @@
                 });
                 
                 this.loadCategoryVisibilitySettings(); // Load category visibility settings
+                this.loadNotesSetting();
                 this.updateCategoryVisibility(); // Apply visibility settings
                 this.updateHeaderStats();
                 this.renderChart();
+                this.updateNotesToggleUI();
             }
 
             initializeElements() {
@@ -1489,6 +1506,7 @@
                 this.burgerUpdateBtn = document.getElementById('burgerUpdateBtn');
                 this.vapingToggle = document.getElementById('vapingToggle');
                 this.alcoholToggle = document.getElementById('alcoholToggle');
+                this.notesToggle = document.getElementById('notesToggle');
                 this.importFile = document.getElementById('importFile');
                 this.activityList = document.getElementById('activityList');
                 
@@ -1531,6 +1549,9 @@
                 this.burgerUpdateBtn.addEventListener('click', () => this.updateApp());
                 this.vapingToggle.addEventListener('click', () => this.toggleCategoryVisibility('vaping'));
                 this.alcoholToggle.addEventListener('click', () => this.toggleCategoryVisibility('alcohol'));
+                if (this.notesToggle) {
+                    this.notesToggle.addEventListener('click', () => this.toggleNotesVisibility());
+                }
                 
                 this.periodBtns.forEach(btn => {
                     btn.addEventListener('click', () => {
@@ -2266,7 +2287,7 @@
                         <div class="activity-entry ${entryClass}" data-entry-id="${entry.id}">
                             <div>
                                 <div class="activity-time">${timeString}</div>
-                                ${entry.note ? `<div class="activity-note">${entry.note}</div>` : ''}
+                                ${this.showNotes && entry.note ? `<div class="activity-note">${entry.note}</div>` : ''}
                             </div>
                             <div class="activity-actions">
                                 <div class="activity-type ${typeClass}">${typeLabel}</div>
@@ -2298,6 +2319,42 @@
                         this.deleteEntry(entryId);
                     });
                 });
+            }
+
+            // Notes visibility preference
+            loadNotesSetting() {
+                try {
+                    const saved = localStorage.getItem('showNotes');
+                    if (saved !== null) {
+                        this.showNotes = JSON.parse(saved) === true;
+                    }
+                } catch (e) {
+                    this.showNotes = true;
+                }
+            }
+
+            saveNotesSetting() {
+                try {
+                    localStorage.setItem('showNotes', JSON.stringify(this.showNotes));
+                } catch (e) {
+                    // noop
+                }
+            }
+
+            updateNotesToggleUI() {
+                if (this.notesToggle) {
+                    this.notesToggle.classList.toggle('active', this.showNotes === true);
+                }
+            }
+
+            toggleNotesVisibility() {
+                this.showNotes = !this.showNotes;
+                this.saveNotesSetting();
+                this.updateNotesToggleUI();
+                // Refresh activity list if visible
+                if (this.currentPeriod === 'day') {
+                    this.renderDayActivity();
+                }
             }
 
             updatePeriodLabel() {
