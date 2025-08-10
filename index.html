@@ -42,6 +42,219 @@
             margin-bottom: 10px;
         }
 
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .burger-menu {
+            position: relative;
+        }
+
+        .burger-icon {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .burger-icon:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .burger-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            min-width: 280px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .burger-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .burger-header {
+            padding: 15px 20px 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .burger-close {
+            background: none;
+            border: none;
+            color: #a0aec0;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            line-height: 1;
+        }
+
+        .burger-close:hover {
+            color: #374156;
+            background: #f7fafc;
+        }
+
+        .burger-section {
+            padding: 20px;
+        }
+
+        .burger-section:not(:last-child) {
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .burger-section h4 {
+            color: #374156;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .burger-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .burger-btn {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            color: #374156;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .burger-btn:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .burger-btn.export {
+            background: #f0fff4;
+            border-color: #68d391;
+            color: #2f855a;
+        }
+
+        .burger-btn.export:hover {
+            background: #c6f6d5;
+        }
+
+        .burger-btn.import {
+            background: #fffaf0;
+            border-color: #f6ad55;
+            color: #c05621;
+        }
+
+        .burger-btn.import:hover {
+            background: #faecc8;
+        }
+
+        .burger-btn.update {
+            background: #faf5ff;
+            border-color: #b794f6;
+            color: #6b46c1;
+        }
+
+        .burger-btn.update:hover {
+            background: #e9d8fd;
+        }
+
+        .category-toggles {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #374156;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            background: #cbd5e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #667eea;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(24px);
+        }
+
+        .burger-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .burger-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
         .stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -547,8 +760,57 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚭 Quit Tracker</h1>
-            <p>Track your progress, one step at a time</p>
+            <div class="header-top">
+                <div>
+                    <h1>Quit Tracker</h1>
+                    <p>Track your progress, one step at a time</p>
+                </div>
+                <div class="burger-menu">
+                    <button class="burger-icon" id="burgerBtn">☰</button>
+                    <div class="burger-dropdown" id="burgerDropdown">
+                        <div class="burger-header">
+                            <button class="burger-close" id="burgerCloseBtn">✕</button>
+                        </div>
+                        <div class="burger-section">
+                            <h4>Data Management</h4>
+                            <div class="burger-buttons">
+                                <button class="burger-btn export" id="burgerExportBtn">
+                                    📤 Export Data
+                                </button>
+                                <button class="burger-btn import" id="burgerImportBtn">
+                                    📥 Import Data
+                                </button>
+                                <button class="burger-btn update" id="burgerUpdateBtn">
+                                    🔄 Update App
+                                </button>
+                            </div>
+                        </div>
+                        <div class="burger-section">
+                            <h4>Category Visibility</h4>
+                            <div class="category-toggles">
+                                <div class="toggle-item">
+                                    <div class="toggle-label">
+                                        <span>💨</span>
+                                        <span>Vaping</span>
+                                    </div>
+                                    <div class="toggle-switch active" id="vapingToggle">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                                <div class="toggle-item">
+                                    <div class="toggle-label">
+                                        <span>🍷</span>
+                                        <span>Alcohol</span>
+                                    </div>
+                                    <div class="toggle-switch active" id="alcoholToggle">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="stats">
                 <div class="stat-group">
                     <h4 id="cravingsLabel">Vape Cravings</h4>
@@ -607,18 +869,8 @@
                 📅 Add Past Entry
             </button>
 
-            <div class="data-controls" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-                <button class="add-past-btn" id="exportBtn" style="background: #48bb78;">
-                    📤 Export Data
-                </button>
-                <button class="add-past-btn" id="importBtn" style="background: #ed8936;">
-                    📥 Import Data
-                </button>
-                <button class="add-past-btn" id="updateBtn" style="background: #9f7aea;">
-                    🔄 Update App
-                </button>
-            </div>
             <input type="file" id="importFile" accept=".json" style="display: none;">
+            <div class="burger-overlay" id="burgerOverlay"></div>
 
             <div class="history">
                 <div class="history-header">
@@ -722,6 +974,7 @@
         </div>
     </div>
 
+    <script src="shared-modal.js"></script>
     <script>
         // Service Worker Registration with improved caching
         if ('serviceWorker' in navigator) {
@@ -878,6 +1131,11 @@
                 this.dataStore = new DataStore();
                 this.entries = [];
                 this.currentCategory = 'vaping'; // Track current active category
+                this.categoryVisibility = {
+                    vaping: true,
+                    alcohol: true
+                };
+                this.updatingVisibility = false;
                 this.initializeElements();
                 this.bindEvents();
                 this.initializeApp();
@@ -946,9 +1204,11 @@
                     }
                 }
                 
+                this.loadCategoryVisibilitySettings(); // Load category visibility settings
                 this.updateButtonsForCategory(); // Initialize buttons for default category
                 this.updateStats();
                 this.renderHistory();
+                this.updateCategoryVisibility(); // Apply visibility settings
             }
 
             initializeElements() {
@@ -965,6 +1225,17 @@
                 this.updateBtn = document.getElementById('updateBtn');
                 this.todayBtn = document.getElementById('todayBtn');
                 this.timelineBtn = document.getElementById('timelineBtn');
+                
+                // Burger menu elements
+                this.burgerBtn = document.getElementById('burgerBtn');
+                this.burgerDropdown = document.getElementById('burgerDropdown');
+                this.burgerOverlay = document.getElementById('burgerOverlay');
+                this.burgerCloseBtn = document.getElementById('burgerCloseBtn');
+                this.burgerExportBtn = document.getElementById('burgerExportBtn');
+                this.burgerImportBtn = document.getElementById('burgerImportBtn');
+                this.burgerUpdateBtn = document.getElementById('burgerUpdateBtn');
+                this.vapingToggle = document.getElementById('vapingToggle');
+                this.alcoholToggle = document.getElementById('alcoholToggle');
                 
                 // Tab elements
                 this.vapingTab = document.getElementById('vapingTab');
@@ -1005,10 +1276,10 @@
                 this.smokedBtn.addEventListener('click', () => this.showEntryModal('smoked'));
                 this.clearBtn.addEventListener('click', () => this.clearHistory());
                 this.addPastBtn.addEventListener('click', () => this.showEntryModal(null, true));
-                this.exportBtn.addEventListener('click', () => this.exportData());
-                this.importBtn.addEventListener('click', () => this.importFile.click());
+                this.burgerExportBtn.addEventListener('click', () => this.exportData());
+                this.burgerImportBtn.addEventListener('click', () => this.importFile.click());
                 this.importFile.addEventListener('change', (e) => this.importData(e));
-                this.updateBtn.addEventListener('click', () => this.updateApp());
+                this.burgerUpdateBtn.addEventListener('click', () => this.updateApp());
                 this.timelineBtn.addEventListener('click', () => window.location.href = 'timeline.html');
                 this.cancelEntryBtn.addEventListener('click', () => this.hideEntryModal());
                 this.entryForm.addEventListener('submit', (e) => this.handleEntrySubmit(e));
@@ -1035,6 +1306,13 @@
                 // Intensity slider events
                 this.intensitySlider.addEventListener('input', (e) => this.updateIntensityLabel(e.target.value, this.intensityValue));
                 this.editIntensitySlider.addEventListener('input', (e) => this.updateIntensityLabel(e.target.value, this.editIntensityValue));
+                
+                // Burger menu events
+                this.burgerBtn.addEventListener('click', () => this.toggleBurgerMenu());
+                this.burgerOverlay.addEventListener('click', () => this.closeBurgerMenu());
+                this.burgerCloseBtn.addEventListener('click', () => this.closeBurgerMenu());
+                this.vapingToggle.addEventListener('click', () => this.toggleCategoryVisibility('vaping'));
+                this.alcoholToggle.addEventListener('click', () => this.toggleCategoryVisibility('alcohol'));
             }
 
             switchCategory(category) {
@@ -1069,6 +1347,9 @@
                 
                 // Update modal options
                 this.updateModalOptions();
+                
+                // Update UI based on category visibility
+                this.updateCategoryVisibility();
             }
 
             updateModalOptions() {
@@ -1439,13 +1720,213 @@
                     return;
                 }
 
-                this.updateBtn.disabled = true;
-                this.updateBtn.textContent = '⏳ Refreshing...';
+                this.burgerUpdateBtn.disabled = true;
+                this.burgerUpdateBtn.textContent = '⏳ Refreshing...';
                 
                 // Simple page refresh - GitHub Pages automatically serves the latest version
                 setTimeout(() => {
                     location.reload();
                 }, 500);
+            }
+
+            toggleBurgerMenu() {
+                const isOpen = this.burgerDropdown.classList.contains('show');
+                if (isOpen) {
+                    this.closeBurgerMenu();
+                } else {
+                    this.openBurgerMenu();
+                }
+            }
+
+            openBurgerMenu() {
+                this.burgerDropdown.classList.add('show');
+                this.burgerOverlay.classList.add('show');
+            }
+
+            closeBurgerMenu() {
+                this.burgerDropdown.classList.remove('show');
+                this.burgerOverlay.classList.remove('show');
+            }
+
+            toggleCategoryVisibility(category) {
+                // Prevent rapid clicking
+                if (this.updatingVisibility) {
+                    return;
+                }
+                
+                this.updatingVisibility = true;
+                
+                try {
+                    this.categoryVisibility[category] = !this.categoryVisibility[category];
+                    this.saveCategoryVisibilitySettings();
+                    this.updateCategoryVisibility();
+                    this.updateStats();
+                    this.renderHistory();
+                } catch (error) {
+                    console.error('Error toggling category visibility:', error);
+                } finally {
+                    // Clear the flag after a short delay
+                    setTimeout(() => {
+                        this.updatingVisibility = false;
+                    }, 100);
+                }
+            }
+
+            updateCategoryVisibility(skipInterfaceRestore = false) {
+                const visibleCategories = Object.values(this.categoryVisibility).filter(visible => visible).length;
+                const isEmptyState = document.querySelector('.main .empty-state') !== null && !document.querySelector('.category-tabs');
+                
+                // If transitioning from empty state to having visible categories, restore the interface
+                if (!skipInterfaceRestore && isEmptyState && visibleCategories > 0) {
+                    this.restoreFullInterface();
+                    return;
+                }
+                
+                // If no categories are visible, show empty state
+                if (visibleCategories === 0) {
+                    this.showEmptyState();
+                    return;
+                }
+                
+                // Update toggle switches if they exist
+                if (this.vapingToggle && this.alcoholToggle) {
+                    this.vapingToggle.classList.toggle('active', this.categoryVisibility.vaping);
+                    this.alcoholToggle.classList.toggle('active', this.categoryVisibility.alcohol);
+                }
+
+                // Get category tabs
+                const categoryTabs = document.querySelector('.category-tabs');
+                
+                // Show/hide tabs based on visibility settings
+                const vapingTab = document.getElementById('vapingTab');
+                const alcoholTab = document.getElementById('alcoholTab');
+                
+                if (vapingTab && alcoholTab) {
+                    vapingTab.style.display = this.categoryVisibility.vaping ? 'flex' : 'none';
+                    alcoholTab.style.display = this.categoryVisibility.alcohol ? 'flex' : 'none';
+                }
+                
+                // If current category is hidden, switch to a visible one
+                if (!this.categoryVisibility[this.currentCategory]) {
+                    if (this.categoryVisibility.vaping) {
+                        this.switchCategory('vaping');
+                    } else if (this.categoryVisibility.alcohol) {
+                        this.switchCategory('alcohol');
+                    }
+                }
+                
+                // Hide entire tabs section if only one category is visible
+                if (categoryTabs) {
+                    categoryTabs.style.display = visibleCategories > 1 ? 'flex' : 'none';
+                }
+                
+                // If only one category is visible, auto-switch to it
+                if (visibleCategories === 1) {
+                    const visibleCategory = Object.keys(this.categoryVisibility).find(cat => this.categoryVisibility[cat]);
+                    if (visibleCategory && this.currentCategory !== visibleCategory) {
+                        this.switchCategory(visibleCategory);
+                    }
+                }
+            }
+
+            showEmptyState() {
+                const main = document.querySelector('.main');
+                main.innerHTML = `
+                    <input type="file" id="importFile" accept=".json" style="display: none;">
+                    <div class="burger-overlay" id="burgerOverlay"></div>
+                    <div class="empty-state" style="padding: 60px 20px; text-align: center;">
+                        <h3 style="color: #a0aec0; margin-bottom: 15px;">No Categories Enabled</h3>
+                        <p style="color: #a0aec0;">Enable at least one category in the menu (☰) to start tracking.</p>
+                    </div>
+                `;
+                // Re-bind the import file event since the element was recreated
+                this.importFile = document.getElementById('importFile');
+                this.burgerOverlay = document.getElementById('burgerOverlay');
+                this.importFile.addEventListener('change', (e) => this.importData(e));
+                this.burgerOverlay.addEventListener('click', () => this.closeBurgerMenu());
+                
+                // Update toggle references and visual state
+                this.vapingToggle = document.getElementById('vapingToggle');
+                this.alcoholToggle = document.getElementById('alcoholToggle');
+                if (this.vapingToggle && this.alcoholToggle) {
+                    this.vapingToggle.classList.toggle('active', this.categoryVisibility.vaping);
+                    this.alcoholToggle.classList.toggle('active', this.categoryVisibility.alcohol);
+                }
+            }
+
+            restoreFullInterface() {
+                const main = document.querySelector('.main');
+                main.innerHTML = `
+                    <div class="success-message" id="successMessage"></div>
+                    <div class="warning-message" id="warningMessage"></div>
+
+                    <!-- Category Tabs -->
+                    <div class="category-tabs">
+                        <button class="tab-btn active" data-category="vaping" id="vapingTab">
+                            💨 Vaping
+                        </button>
+                        <button class="tab-btn" data-category="alcohol" id="alcoholTab">
+                            🍷 Alcohol
+                        </button>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="craving-button" id="cravingBtn">
+                            😣 Had a Craving
+                        </button>
+                        <button class="vaped-button" id="smokedBtn">
+                            💨 I Vaped
+                        </button>
+                    </div>
+
+                    <button class="add-past-btn" id="addPastBtn">
+                        📅 Add Past Entry
+                    </button>
+
+                    <input type="file" id="importFile" accept=".json" style="display: none;">
+                    <div class="burger-overlay" id="burgerOverlay"></div>
+
+                    <div class="history">
+                        <div class="history-header">
+                            <h3>Today's Activity</h3>
+                            <button class="clear-btn" id="clearBtn" style="display: none;">Clear All</button>
+                        </div>
+                        <div id="entryHistory">
+                            <div class="empty-state">
+                                No entries recorded yet. When you log your first entry, it will appear here.
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Re-initialize elements after restoring interface
+                this.initializeElements();
+                this.bindEvents();
+                this.updateButtonsForCategory();
+                this.updateStats();
+                this.renderHistory();
+                this.updateCategoryVisibility(true); // Skip interface restore to prevent recursion
+            }
+
+            loadCategoryVisibilitySettings() {
+                try {
+                    const saved = localStorage.getItem('categoryVisibility');
+                    if (saved) {
+                        this.categoryVisibility = JSON.parse(saved);
+                    }
+                } catch (error) {
+                    console.error('Failed to load category visibility settings:', error);
+                    // Use defaults
+                    this.categoryVisibility = { vaping: true, alcohol: true };
+                }
+            }
+
+            saveCategoryVisibilitySettings() {
+                try {
+                    localStorage.setItem('categoryVisibility', JSON.stringify(this.categoryVisibility));
+                } catch (error) {
+                    console.error('Failed to save category visibility settings:', error);
+                }
             }
         }
 

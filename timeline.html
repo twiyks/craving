@@ -42,6 +42,219 @@
             margin-bottom: 10px;
         }
 
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .burger-menu {
+            position: relative;
+        }
+
+        .burger-icon {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .burger-icon:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .burger-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            min-width: 280px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .burger-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .burger-header {
+            padding: 15px 20px 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .burger-close {
+            background: none;
+            border: none;
+            color: #a0aec0;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            line-height: 1;
+        }
+
+        .burger-close:hover {
+            color: #374156;
+            background: #f7fafc;
+        }
+
+        .burger-section {
+            padding: 20px;
+        }
+
+        .burger-section:not(:last-child) {
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .burger-section h4 {
+            color: #374156;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .burger-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .burger-btn {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            color: #374156;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .burger-btn:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .burger-btn.export {
+            background: #f0fff4;
+            border-color: #68d391;
+            color: #2f855a;
+        }
+
+        .burger-btn.export:hover {
+            background: #c6f6d5;
+        }
+
+        .burger-btn.import {
+            background: #fffaf0;
+            border-color: #f6ad55;
+            color: #c05621;
+        }
+
+        .burger-btn.import:hover {
+            background: #faecc8;
+        }
+
+        .burger-btn.update {
+            background: #faf5ff;
+            border-color: #b794f6;
+            color: #6b46c1;
+        }
+
+        .burger-btn.update:hover {
+            background: #e9d8fd;
+        }
+
+        .category-toggles {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #374156;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            background: #cbd5e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #667eea;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(24px);
+        }
+
+        .burger-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .burger-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
         .stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -522,6 +735,168 @@
             font-size: 14px;
         }
 
+        .activity-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .edit-entry-btn, .delete-entry-btn {
+            background: none;
+            border: none;
+            padding: 4px 6px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .edit-entry-btn:hover, .delete-entry-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .delete-entry-btn {
+            color: #e53e3e;
+        }
+
+        .delete-entry-btn:hover {
+            background: rgba(229, 62, 62, 0.1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #374156;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #374156;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: end;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #374156;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .intensity-slider-container {
+            margin-top: 10px;
+        }
+
+        .intensity-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+            margin-bottom: 15px;
+        }
+
+        .intensity-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .intensity-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .intensity-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .intensity-value {
+            text-align: center;
+            font-weight: bold;
+            color: #374156;
+        }
+
         /* Line Graph Styles */
         .line-graph-container {
             height: 320px;
@@ -671,8 +1046,57 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚭 Quit Tracker</h1>
-            <p>Track your progress, one step at a time</p>
+            <div class="header-top">
+                <div>
+                    <h1>Quit Tracker</h1>
+                    <p>Track your progress, one step at a time</p>
+                </div>
+                <div class="burger-menu">
+                    <button class="burger-icon" id="burgerBtn">☰</button>
+                    <div class="burger-dropdown" id="burgerDropdown">
+                        <div class="burger-header">
+                            <button class="burger-close" id="burgerCloseBtn">✕</button>
+                        </div>
+                        <div class="burger-section">
+                            <h4>Data Management</h4>
+                            <div class="burger-buttons">
+                                <button class="burger-btn export" id="burgerExportBtn">
+                                    📤 Export Data
+                                </button>
+                                <button class="burger-btn import" id="burgerImportBtn">
+                                    📥 Import Data
+                                </button>
+                                <button class="burger-btn update" id="burgerUpdateBtn">
+                                    🔄 Update App
+                                </button>
+                            </div>
+                        </div>
+                        <div class="burger-section">
+                            <h4>Category Visibility</h4>
+                            <div class="category-toggles">
+                                <div class="toggle-item">
+                                    <div class="toggle-label">
+                                        <span>💨</span>
+                                        <span>Vaping</span>
+                                    </div>
+                                    <div class="toggle-switch active" id="vapingToggle">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                                <div class="toggle-item">
+                                    <div class="toggle-label">
+                                        <span>🍷</span>
+                                        <span>Alcohol</span>
+                                    </div>
+                                    <div class="toggle-switch active" id="alcoholToggle">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="stats">
                 <div class="stat-group">
                     <h4>Cravings</h4>
@@ -705,6 +1129,9 @@
         </div>
 
         <div class="main">
+            <input type="file" id="importFile" accept=".json" style="display: none;">
+            <div class="burger-overlay" id="burgerOverlay"></div>
+            
             <div class="timeline-controls">
                 <button class="period-btn active" data-period="day">Day</button>
                 <button class="period-btn" data-period="week">Week</button>
@@ -754,7 +1181,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="legend">
+                <div class="legend" id="chartLegend">
                     <div class="legend-item">
                         <div class="legend-color cravings"></div>
                         <span>Vaping Cravings</span>
@@ -788,6 +1215,51 @@
         </div>
     </div>
 
+    <!-- Edit Entry Modal -->
+    <div id="editEntryModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Entry</h3>
+            <form id="editEntryForm">
+                <div class="form-group">
+                    <label for="editEntryType">Type:</label>
+                    <select id="editEntryType" required>
+                        <option value="craving">Had a Craving</option>
+                        <option value="smoked">I Vaped</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editEntryDate">Date:</label>
+                    <input type="date" id="editEntryDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEntryTime">Time:</label>
+                    <input type="time" id="editEntryTime" required>
+                </div>
+                <div class="form-group" id="editIntensityGroup">
+                    <label for="editIntensity">Craving Intensity (optional):</label>
+                    <div class="intensity-slider-container">
+                        <input type="range" id="editIntensity" min="1" max="3" value="2" class="intensity-slider">
+                        <div class="intensity-labels">
+                            <span class="intensity-label">Mild</span>
+                            <span class="intensity-label">Medium</span>
+                            <span class="intensity-label">Strong</span>
+                        </div>
+                        <div class="intensity-value" id="editIntensityValue">Medium</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editNote">Note (optional):</label>
+                    <textarea id="editNote" placeholder="Add details about this entry..."></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="shared-modal.js"></script>
     <script>
         // Service Worker Registration (same as main page)
         if ('serviceWorker' in navigator) {
@@ -896,6 +1368,42 @@
                     request.onerror = () => reject(request.error);
                 });
             }
+
+            async saveEntries(entries) {
+                if (!this.db) await this.init();
+                
+                const transaction = this.db.transaction([this.storeName], 'readwrite');
+                const store = transaction.objectStore(this.storeName);
+                
+                // Clear existing entries and add new ones
+                await store.clear();
+                for (const entry of entries) {
+                    await store.add(entry);
+                }
+            }
+
+            async exportData() {
+                const entries = await this.loadEntries();
+                const exportData = {
+                    version: '1.0',
+                    timestamp: new Date().toISOString(),
+                    entries: entries
+                };
+                return JSON.stringify(exportData, null, 2);
+            }
+
+            async importData(jsonData) {
+                const data = JSON.parse(jsonData);
+                const entries = data.entries || data; // Support both formats
+                
+                // Validate entries
+                const validEntries = entries.filter(entry => 
+                    entry.timestamp && entry.type && typeof entry.id !== 'undefined'
+                );
+                
+                await this.saveEntries(validEntries);
+                return validEntries.length;
+            }
         }
 
         class TimelineView {
@@ -907,6 +1415,12 @@
                 this.selectedDate = new Date(); // Track selected date for day view
                 this.weekOffset = parseInt(sessionStorage.getItem('timelineWeekOffset')) || 0; // Persist across refreshes
                 this.monthOffset = parseInt(sessionStorage.getItem('timelineMonthOffset')) || 0; // Persist across refreshes
+                this.categoryVisibility = {
+                    vaping: true,
+                    alcohol: true
+                };
+                this.updatingVisibility = false;
+                this.currentEditingId = null;
                 this.initializeElements();
                 this.bindEvents();
                 this.initializeApp();
@@ -937,6 +1451,8 @@
                     }
                 });
                 
+                this.loadCategoryVisibilitySettings(); // Load category visibility settings
+                this.updateCategoryVisibility(); // Apply visibility settings
                 this.updateHeaderStats();
                 this.renderChart();
             }
@@ -962,6 +1478,18 @@
                 this.nextDateBtn = document.getElementById('nextDateBtn');
                 this.todayDateBtn = document.getElementById('todayDateBtn');
                 this.dayActivity = document.getElementById('dayActivity');
+                
+                // Burger menu elements
+                this.burgerBtn = document.getElementById('burgerBtn');
+                this.burgerDropdown = document.getElementById('burgerDropdown');
+                this.burgerOverlay = document.getElementById('burgerOverlay');
+                this.burgerCloseBtn = document.getElementById('burgerCloseBtn');
+                this.burgerExportBtn = document.getElementById('burgerExportBtn');
+                this.burgerImportBtn = document.getElementById('burgerImportBtn');
+                this.burgerUpdateBtn = document.getElementById('burgerUpdateBtn');
+                this.vapingToggle = document.getElementById('vapingToggle');
+                this.alcoholToggle = document.getElementById('alcoholToggle');
+                this.importFile = document.getElementById('importFile');
                 this.activityList = document.getElementById('activityList');
                 
                 // Period navigation elements
@@ -976,10 +1504,33 @@
                 this.totalCravings = document.getElementById('totalCravings');
                 this.totalSmoked = document.getElementById('totalSmoked');
                 this.smokeFreeTime = document.getElementById('smokeFreeTime');
+                
+                // Edit modal elements
+                this.editEntryModal = document.getElementById('editEntryModal');
+                this.editEntryForm = document.getElementById('editEntryForm');
+                this.editEntryType = document.getElementById('editEntryType');
+                this.editEntryDate = document.getElementById('editEntryDate');
+                this.editEntryTime = document.getElementById('editEntryTime');
+                this.editIntensity = document.getElementById('editIntensity');
+                this.editIntensityValue = document.getElementById('editIntensityValue');
+                this.editIntensityGroup = document.getElementById('editIntensityGroup');
+                this.editNote = document.getElementById('editNote');
+                this.cancelEditBtn = document.getElementById('cancelEditBtn');
             }
 
             bindEvents() {
                 this.todayBtn.addEventListener('click', () => window.location.href = 'index.html');
+                
+                // Burger menu events
+                this.burgerBtn.addEventListener('click', () => this.toggleBurgerMenu());
+                this.burgerOverlay.addEventListener('click', () => this.closeBurgerMenu());
+                this.burgerCloseBtn.addEventListener('click', () => this.closeBurgerMenu());
+                this.burgerExportBtn.addEventListener('click', () => this.exportData());
+                this.burgerImportBtn.addEventListener('click', () => this.importFile.click());
+                this.importFile.addEventListener('change', (e) => this.importData(e));
+                this.burgerUpdateBtn.addEventListener('click', () => this.updateApp());
+                this.vapingToggle.addEventListener('click', () => this.toggleCategoryVisibility('vaping'));
+                this.alcoholToggle.addEventListener('click', () => this.toggleCategoryVisibility('alcohol'));
                 
                 this.periodBtns.forEach(btn => {
                     btn.addEventListener('click', () => {
@@ -1010,6 +1561,47 @@
                 this.prevPeriodBtn.addEventListener('click', () => this.changePeriodOffset(-1));
                 this.nextPeriodBtn.addEventListener('click', () => this.changePeriodOffset(1));
                 this.currentPeriodBtn.addEventListener('click', () => this.resetPeriodOffset());
+                
+                // Edit modal event handlers
+                if (this.cancelEditBtn) {
+                    this.cancelEditBtn.addEventListener('click', () => this.hideEditModal());
+                } else {
+                    console.error('cancelEditBtn not found');
+                }
+                
+                if (this.editEntryForm) {
+                    this.editEntryForm.addEventListener('submit', (e) => this.handleEditSubmit(e));
+                    console.log('Edit form event listener attached to:', this.editEntryForm);
+                    
+                    // Also try adding a click handler to the submit button as backup
+                    const submitBtn = this.editEntryForm.querySelector('.btn-primary');
+                    if (submitBtn) {
+                        submitBtn.addEventListener('click', (e) => {
+                            console.log('Submit button clicked');
+                            if (submitBtn.type === 'submit') {
+                                // Let the form handle it
+                                return;
+                            }
+                            e.preventDefault();
+                            this.handleEditSubmit(e);
+                        });
+                    }
+                } else {
+                    console.error('editEntryForm not found');
+                }
+                
+                if (this.editIntensity) {
+                    this.editIntensity.addEventListener('input', (e) => this.updateIntensityLabel(e.target.value, this.editIntensityValue));
+                } else {
+                    console.error('editIntensity not found');
+                }
+                
+                // Close edit modal when clicking outside
+                this.editEntryModal.addEventListener('click', (e) => {
+                    if (e.target === this.editEntryModal) {
+                        this.hideEditModal();
+                    }
+                });
             }
 
             changePeriodOffset(direction) {
@@ -1097,9 +1689,6 @@
             renderChart() {
                 const data = this.aggregateData();
                 
-                // Debug logging
-                console.log('Timeline data for', this.currentPeriod, ':', data);
-                console.log('Total entries:', this.entries.length);
                 
                 // Update chart title
                 const titles = {
@@ -1239,12 +1828,9 @@
 
             aggregateData() {
                 if (this.entries.length === 0) {
-                    console.log('No entries found for aggregation');
                     return [];
                 }
 
-                console.log('Aggregating data for period:', this.currentPeriod);
-                console.log('Sample entry:', this.entries[0]);
                 
                 const now = new Date();
                 const data = [];
@@ -1254,7 +1840,6 @@
                         // Show selected date's data with hourly breakdown
                         const selectedDateString = this.selectedDate.toDateString();
                         
-                        console.log('Looking for entries on:', selectedDateString);
                         
                         // Find all selected date's entries first
                         const selectedDateEntries = this.entries.filter(e => {
@@ -1263,12 +1848,6 @@
                             return entryDateString === selectedDateString;
                         });
                         
-                        console.log('Found', selectedDateEntries.length, 'entries for selected date');
-                        console.log('Selected date\'s entries:', selectedDateEntries.map(e => ({
-                            time: new Date(e.timestamp).toLocaleTimeString(),
-                            type: e.type,
-                            hour: new Date(e.timestamp).getHours()
-                        })));
                         
                         // Group selected date's entries by hour
                         for (let hour = 0; hour < 24; hour++) {
@@ -1284,7 +1863,6 @@
                             const vapedCount = hourEntries.filter(e => e.type === 'smoked').length;
                             
                             if (cravingsCount > 0 || vapedCount > 0) {
-                                console.log(`Hour ${hour} (${hourLabel}): ${cravingsCount} cravings, ${vapedCount} vaped`);
                             }
                             
                             data.push({
@@ -1685,17 +2263,41 @@
                     }
 
                     return `
-                        <div class="activity-entry ${entryClass}">
+                        <div class="activity-entry ${entryClass}" data-entry-id="${entry.id}">
                             <div>
                                 <div class="activity-time">${timeString}</div>
                                 ${entry.note ? `<div class="activity-note">${entry.note}</div>` : ''}
                             </div>
-                            <div class="activity-type ${typeClass}">${typeLabel}</div>
+                            <div class="activity-actions">
+                                <div class="activity-type ${typeClass}">${typeLabel}</div>
+                                <button class="edit-entry-btn" data-entry-id="${entry.id}" title="Edit entry">✏️</button>
+                                <button class="delete-entry-btn" data-entry-id="${entry.id}" title="Delete entry">×</button>
+                            </div>
                         </div>
                     `;
                 }).join('');
 
                 this.activityList.innerHTML = activityHTML;
+                
+                // Add event listeners to edit buttons
+                const editBtns = this.activityList.querySelectorAll('.edit-entry-btn');
+                editBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const entryId = parseInt(btn.dataset.entryId);
+                        this.showEditModal(entryId);
+                    });
+                });
+
+                // Add event listeners to delete buttons
+                const deleteBtns = this.activityList.querySelectorAll('.delete-entry-btn');
+                deleteBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const entryId = parseInt(btn.dataset.entryId);
+                        this.deleteEntry(entryId);
+                    });
+                });
             }
 
             updatePeriodLabel() {
@@ -1716,6 +2318,428 @@
                     const monthDate = new Date(now.getFullYear(), now.getMonth() + this.monthOffset, 1);
                     this.periodLabel.textContent = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
                 }
+            }
+
+            toggleBurgerMenu() {
+                const isOpen = this.burgerDropdown.classList.contains('show');
+                if (isOpen) {
+                    this.closeBurgerMenu();
+                } else {
+                    this.openBurgerMenu();
+                }
+            }
+
+            openBurgerMenu() {
+                this.burgerDropdown.classList.add('show');
+                this.burgerOverlay.classList.add('show');
+            }
+
+            closeBurgerMenu() {
+                this.burgerDropdown.classList.remove('show');
+                this.burgerOverlay.classList.remove('show');
+            }
+
+            toggleCategoryVisibility(category) {
+                // Prevent rapid clicking
+                if (this.updatingVisibility) {
+                    return;
+                }
+                
+                this.updatingVisibility = true;
+                
+                try {
+                    this.categoryVisibility[category] = !this.categoryVisibility[category];
+                    this.saveCategoryVisibilitySettings();
+                    this.updateCategoryVisibility();
+                    this.renderChart();
+                } catch (error) {
+                    console.error('Error toggling category visibility:', error);
+                } finally {
+                    // Clear the flag after a short delay
+                    setTimeout(() => {
+                        this.updatingVisibility = false;
+                    }, 100);
+                }
+            }
+
+            updateCategoryVisibility(skipInterfaceRestore = false) {
+                const visibleCategories = Object.values(this.categoryVisibility).filter(visible => visible).length;
+                const isEmptyState = document.querySelector('.main .empty-state') !== null && !document.querySelector('.timeline-controls');
+                
+                // If transitioning from empty state to having visible categories, restore the interface
+                if (!skipInterfaceRestore && isEmptyState && visibleCategories > 0) {
+                    this.restoreFullInterface();
+                    return;
+                }
+                
+                // If no categories are visible, show empty state
+                if (visibleCategories === 0) {
+                    this.showEmptyState();
+                    return;
+                }
+                
+                // Update toggle switches if they exist
+                if (this.vapingToggle && this.alcoholToggle) {
+                    this.vapingToggle.classList.toggle('active', this.categoryVisibility.vaping);
+                    this.alcoholToggle.classList.toggle('active', this.categoryVisibility.alcohol);
+                }
+
+                // Update filter buttons based on visibility
+                if (this.vapingFilter && this.alcoholFilter) {
+                    this.vapingFilter.style.display = this.categoryVisibility.vaping ? 'block' : 'none';
+                    this.alcoholFilter.style.display = this.categoryVisibility.alcohol ? 'block' : 'none';
+                }
+
+                // Remove hidden categories from active filters
+                if (!this.categoryVisibility.vaping && this.activeFilters.has('vaping')) {
+                    this.activeFilters.delete('vaping');
+                }
+                if (!this.categoryVisibility.alcohol && this.activeFilters.has('alcohol')) {
+                    this.activeFilters.delete('alcohol');
+                }
+
+                // Update filter button states
+                this.updateFilterButtons();
+                this.updateLegend();
+            }
+
+            updateFilterButtons() {
+                // Update filter button states based on active filters and visibility
+                this.filterBtns.forEach(btn => {
+                    const filter = btn.dataset.filter;
+                    if (filter === 'all') {
+                        btn.classList.toggle('active', this.activeFilters.has('vaping') && this.activeFilters.has('alcohol'));
+                    } else {
+                        btn.classList.toggle('active', this.activeFilters.has(filter));
+                    }
+                });
+            }
+
+            updateLegend() {
+                const legend = document.getElementById('chartLegend');
+                if (!legend) return;
+
+                let legendHTML = '';
+                
+                if (this.categoryVisibility.vaping) {
+                    legendHTML += `
+                        <div class="legend-item">
+                            <div class="legend-color cravings"></div>
+                            <span>Vaping Cravings</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color vaped"></div>
+                            <span>Vaped</span>
+                        </div>
+                    `;
+                }
+                
+                if (this.categoryVisibility.alcohol) {
+                    legendHTML += `
+                        <div class="legend-item">
+                            <div class="legend-color alcohol-cravings"></div>
+                            <span>Alcohol Cravings</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color alcohol-consumed"></div>
+                            <span>Drank</span>
+                        </div>
+                    `;
+                }
+                
+                legend.innerHTML = legendHTML;
+            }
+
+            updateIntensityLabel(value, labelElement) {
+                ModalUtils.updateIntensityLabel(value, labelElement);
+            }
+
+            showEditModal(entryId) {
+                const entry = this.entries.find(e => e.id === entryId);
+                if (!entry) {
+                    alert('Entry not found!');
+                    return;
+                }
+
+                this.currentEditingId = entry.id;
+                
+                // Use shared utility to populate the form
+                const elements = {
+                    typeSelect: this.editEntryType,
+                    dateInput: this.editEntryDate,
+                    timeInput: this.editEntryTime,
+                    noteInput: this.editNote,
+                    intensityGroup: this.editIntensityGroup,
+                    intensitySlider: this.editIntensity,
+                    intensityValue: this.editIntensityValue
+                };
+                
+                ModalUtils.populateEditForm(entry, elements);
+                this.editEntryModal.style.display = 'block';
+            }
+
+            hideEditModal() {
+                this.editEntryModal.style.display = 'none';
+                this.editEntryForm.reset();
+                this.currentEditingId = null;
+            }
+
+            async deleteEntry(entryId) {
+                if (confirm('Are you sure you want to delete this entry?')) {
+                    try {
+                        this.entries = this.entries.filter(entry => entry.id !== entryId);
+                        await this.dataStore.saveEntries(this.entries);
+                        this.updateHeaderStats();
+                        this.renderChart();
+                    } catch (error) {
+                        console.error('Failed to delete entry:', error);
+                        alert('Failed to delete entry. Please try again.');
+                    }
+                }
+            }
+
+            async handleEditSubmit(e) {
+                e.preventDefault();
+                
+                try {
+                    const type = this.editEntryType.value;
+                    const date = this.editEntryDate.value;
+                    const time = this.editEntryTime.value;
+                    const note = this.editNote.value.trim();
+                    
+                    // Use shared validation
+                    if (!ModalUtils.validateEntry(date, time)) {
+                        return;
+                    }
+                    
+                    // Find and update the entry
+                    const entryIndex = this.entries.findIndex(e => e.id === this.currentEditingId);
+                    
+                    if (entryIndex === -1) {
+                        alert('Entry not found!');
+                        return;
+                    }
+                    
+                    const entry = this.entries[entryIndex];
+                    const timestamp = new Date(`${date}T${time}`);
+                    
+                    this.entries[entryIndex] = {
+                        ...entry,
+                        type: type,
+                        timestamp: timestamp.toISOString(),
+                        note: note,
+                        date: timestamp.toDateString(),
+                        intensity: type === 'craving' ? parseInt(this.editIntensity.value) : null
+                    };
+                    
+                    // Re-sort entries by timestamp
+                    this.entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    
+                    // Save to data store
+                    await this.dataStore.saveEntries(this.entries);
+                    this.hideEditModal();
+                    
+                    // Update the display
+                    this.updateHeaderStats();
+                    this.renderChart();
+                    this.renderDayActivity(); // Refresh the day activity list
+                    
+                } catch (error) {
+                    console.error('Error in handleEditSubmit:', error);
+                    alert('Failed to save changes: ' + error.message);
+                }
+            }
+
+            showEmptyState() {
+                const main = document.querySelector('.main');
+                main.innerHTML = `
+                    <input type="file" id="importFile" accept=".json" style="display: none;">
+                    <div class="burger-overlay" id="burgerOverlay"></div>
+                    <div class="empty-state" style="padding: 60px 20px; text-align: center;">
+                        <h3 style="color: #a0aec0; margin-bottom: 15px;">No Categories Enabled</h3>
+                        <p style="color: #a0aec0;">Enable at least one category in the menu (☰) to start viewing timeline data.</p>
+                    </div>
+                `;
+                // Re-bind events since elements were recreated
+                this.importFile = document.getElementById('importFile');
+                this.burgerOverlay = document.getElementById('burgerOverlay');
+                this.importFile.addEventListener('change', (e) => this.importData(e));
+                this.burgerOverlay.addEventListener('click', () => this.closeBurgerMenu());
+                
+                // Update toggle references and visual state
+                this.vapingToggle = document.getElementById('vapingToggle');
+                this.alcoholToggle = document.getElementById('alcoholToggle');
+                if (this.vapingToggle && this.alcoholToggle) {
+                    this.vapingToggle.classList.toggle('active', this.categoryVisibility.vaping);
+                    this.alcoholToggle.classList.toggle('active', this.categoryVisibility.alcohol);
+                }
+            }
+
+            restoreFullInterface() {
+                const main = document.querySelector('.main');
+                main.innerHTML = `
+                    <input type="file" id="importFile" accept=".json" style="display: none;">
+                    <div class="burger-overlay" id="burgerOverlay"></div>
+                    
+                    <div class="timeline-controls">
+                        <button class="period-btn active" data-period="day">Day</button>
+                        <button class="period-btn" data-period="week">Week</button>
+                        <button class="period-btn" data-period="month">Month</button>
+                        <button class="period-btn" data-period="year">Year</button>
+                    </div>
+
+                    <div class="filter-controls">
+                        <button class="filter-btn active" data-filter="all" id="allFilter">
+                            📊 All Data
+                        </button>
+                        <button class="filter-btn active" data-filter="vaping" id="vapingFilter">
+                            💨 Vaping
+                        </button>
+                        <button class="filter-btn active" data-filter="alcohol" id="alcoholFilter">
+                            🍷 Alcohol
+                        </button>
+                    </div>
+
+                    <div class="timeline-chart">
+                        <div class="chart-title" id="chartTitle">Daily Timeline</div>
+                        
+                        <!-- Date navigation controls for day view -->
+                        <div class="date-navigation" id="dateNavigation" style="display: none;">
+                            <button class="nav-btn-small" id="prevDateBtn">◀</button>
+                            <input type="date" id="selectedDate" class="date-input">
+                            <button class="nav-btn-small" id="nextDateBtn">▶</button>
+                            <button class="nav-btn-small" id="todayDateBtn">Today</button>
+                        </div>
+
+                        <!-- Period navigation controls for week/month views -->
+                        <div class="period-navigation" id="periodNavigation" style="display: none;">
+                            <button class="nav-btn-small" id="prevPeriodBtn">◀ Previous</button>
+                            <span class="period-label" id="periodLabel">Current Period</span>
+                            <button class="nav-btn-small" id="nextPeriodBtn">Next ▶</button>
+                            <button class="nav-btn-small" id="currentPeriodBtn">Current</button>
+                        </div>
+                        <div class="chart-container">
+                            <div class="y-axis" id="yAxis">
+                                <!-- Y-axis labels will be generated by JavaScript -->
+                            </div>
+                            <div class="chart-bars-container">
+                                <div class="chart-bars" id="chartBars">
+                                    <div class="empty-state">
+                                        No data available for the selected period.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="legend" id="chartLegend">
+                            <div class="legend-item">
+                                <div class="legend-color cravings"></div>
+                                <span>Vaping Cravings</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color vaped"></div>
+                                <span>Vaped</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color alcohol-cravings"></div>
+                                <span>Alcohol Cravings</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color alcohol-consumed"></div>
+                                <span>Drank</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="summary-stats" id="summaryStats">
+                        <!-- Summary cards will be populated by JavaScript -->
+                    </div>
+
+                    <!-- Day Activity List (only shown in day view) -->
+                    <div class="day-activity" id="dayActivity" style="display: none;">
+                        <h3>Activity for Selected Day</h3>
+                        <div class="activity-list" id="activityList">
+                            <!-- Activity entries will be populated by JavaScript -->
+                        </div>
+                    </div>
+                `;
+                
+                // Re-initialize elements after restoring interface
+                this.initializeElements();
+                this.bindEvents();
+                this.updateHeaderStats();
+                this.renderChart();
+                this.updateCategoryVisibility(true); // Skip interface restore to prevent recursion
+            }
+
+            loadCategoryVisibilitySettings() {
+                try {
+                    const saved = localStorage.getItem('categoryVisibility');
+                    if (saved) {
+                        this.categoryVisibility = JSON.parse(saved);
+                    }
+                } catch (error) {
+                    console.error('Failed to load category visibility settings:', error);
+                    // Use defaults
+                    this.categoryVisibility = { vaping: true, alcohol: true };
+                }
+            }
+
+            saveCategoryVisibilitySettings() {
+                try {
+                    localStorage.setItem('categoryVisibility', JSON.stringify(this.categoryVisibility));
+                } catch (error) {
+                    console.error('Failed to save category visibility settings:', error);
+                }
+            }
+
+            async exportData() {
+                try {
+                    const exportData = await this.dataStore.exportData();
+                    const blob = new Blob([exportData], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `quit-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    this.closeBurgerMenu();
+                } catch (error) {
+                    console.error('Export failed:', error);
+                }
+            }
+
+            async importData(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                try {
+                    const text = await file.text();
+                    const importedCount = await this.dataStore.importData(text);
+                    this.entries = await this.dataStore.loadEntries();
+                    this.updateHeaderStats();
+                    this.renderChart();
+                    this.closeBurgerMenu();
+                } catch (error) {
+                    console.error('Import failed:', error);
+                } finally {
+                    event.target.value = '';
+                }
+            }
+
+            async updateApp() {
+                if (!confirm('This will refresh the page to load the latest version from GitHub Pages. Continue?')) {
+                    return;
+                }
+
+                this.burgerUpdateBtn.disabled = true;
+                this.burgerUpdateBtn.textContent = '⏳ Refreshing...';
+                
+                // Simple page refresh - GitHub Pages automatically serves the latest version
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
             }
         }
 

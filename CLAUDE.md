@@ -44,6 +44,7 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - **Modal-based entry creation**: All entries created through modal with date/time/note fields
 - **Craving intensity slider**: 3-level intensity scale (Mild, Medium, Strong) for cravings
 - **Entry editing**: Edit any previous entry (date, time, type, note, intensity)
+- **Entry deletion**: Delete entries with confirmation dialog
 - **Navigation**: Seamless switching between Today and Timeline views
 - **Export/import data**: JSON backup and restore functionality
 - **Auto-update from GitHub**: Updates app while preserving user data
@@ -57,6 +58,7 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - **Fixed y-axis**: Numerical scale stays visible during horizontal scrolling
 - **Data aggregation**: Smart grouping by time periods with accurate filtering
 - **Interactive charts**: Hover values and scrollable day view
+- **Entry management**: Edit and delete entries directly from timeline day view
 
 ### Technical Features
 - **PWA capabilities**: Offline support, installable, cached resources
@@ -120,6 +122,7 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 /
 ├── index.html          # Main tracking interface
 ├── timeline.html       # Analytics dashboard
+├── shared-modal.js     # Shared modal utility functions
 └── CLAUDE.md           # This file
 ```
 
@@ -148,6 +151,12 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - Only applies to craving entries (`type: 'craving'`)
 - Legacy entries auto-migrate to intensity 2
 - Slider component has CSS classes: `.intensity-slider`, `.intensity-labels`, `.intensity-value`
+
+### Entry Management
+- **Edit functionality**: Both pages support full entry editing via shared modal system
+- **Delete functionality**: Confirmation dialog ("Are you sure you want to delete this entry?")
+- **Shared utilities**: `shared-modal.js` provides common modal operations and validation
+- **Consistent UX**: Edit (✏️) and delete (×) buttons with consistent styling across pages
 
 ### Data Migration
 - Check `initializeApp()` methods in both classes for auto-migration logic
