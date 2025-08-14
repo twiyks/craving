@@ -49,6 +49,7 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - **Export/import data**: JSON backup and restore functionality
 - **Auto-update from GitHub**: Updates app while preserving user data
 - **Mobile optimized**: Responsive design with proper touch targets
+- **Notes visibility toggle**: Burger menu option to show/hide notes in entries (persists across pages)
 
 ### Timeline Analytics (timeline.html)
 - **Multiple time views**: Day (hourly), Week (daily), Month (monthly), Year (yearly)
@@ -59,6 +60,7 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - **Data aggregation**: Smart grouping by time periods with accurate filtering
 - **Interactive charts**: Hover values and scrollable day view
 - **Entry management**: Edit and delete entries directly from timeline day view
+- **Notes visibility toggle**: Burger menu option affects day activity list note display
 
 ### Technical Features
 - **PWA capabilities**: Offline support, installable, cached resources
@@ -67,6 +69,18 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - **Cross-browser compatibility**: Works on mobile browsers (Chrome, DuckDuckGo, etc.)
 
 ## Important Implementation Details
+
+### Notes Display Toggle
+- **Purpose**: Allow users to show/hide entry notes across both pages.
+- **Storage**: Uses `localStorage` key `showNotes` (boolean, default `true`).
+- **UI**: Added under burger menu as `Display Options → Show Notes` with a `.toggle-switch` element (`#notesToggle`).
+- **Behavior**:
+  - On load, both `QuitTracker` (index) and `TimelineView` (timeline) call `loadNotesSetting()` to set `this.showNotes`.
+  - Tapping the toggle triggers `toggleNotesVisibility()` → flips `this.showNotes`, saves via `saveNotesSetting()`, updates visual state via `updateNotesToggleUI()`, and re-renders the affected list.
+  - Cross-page: because the preference is in `localStorage`, the setting applies on both pages.
+- **Rendering**:
+  - `index.html` `renderHistory()` only inserts note HTML when `this.showNotes && entry.note`.
+  - `timeline.html` `renderDayActivity()` only inserts note HTML when `this.showNotes && entry.note`.
 
 ### Timeline Chart Rendering
 - **Pixel-based heights**: Uses pixel calculations instead of percentages for accurate scaling
@@ -133,6 +147,13 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 2. Update category validation in entry creation logic
 3. Add color scheme to timeline.html CSS for new category
 4. Update filtering logic in `TimelineView` class
+
+### Adding a New Display Preference (e.g., another toggle)
+1. Add a toggle control in both pages' burger menus under a new or existing section.
+2. Add a `this.<preference>` field with default, plus `load<Pref>Setting()`, `save<Pref>Setting()`, `update<Pref>ToggleUI()`, and a `toggle<Pref>()` handler.
+3. Persist to `localStorage` with a clear key (shared across pages).
+4. Update render paths (e.g., `renderHistory()`, `renderDayActivity()`, charts) to respect the preference.
+5. Initialize preference during app load and sync the toggle UI state.
 
 ### Adding New Time Periods to Timeline
 1. Add case to `aggregateData()` switch statement
