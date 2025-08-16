@@ -512,6 +512,18 @@
             margin-top: 5px;
         }
 
+        .entry-cost {
+            color: #2d5a27;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 5px;
+            background: #e8f5e8;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            border: 1px solid #b8e6b8;
+        }
+
         .entry-actions {
             display: flex;
             align-items: center;
@@ -932,6 +944,18 @@
                         <div class="intensity-value" id="intensityValue">Medium</div>
                     </div>
                 </div>
+                <div class="form-group" id="costGroup" style="display: none;">
+                    <label for="entryCost">Cost:</label>
+                    <div class="intensity-slider-container">
+                        <input type="range" id="entryCost" min="0" max="40" step="1" value="0" class="intensity-slider">
+                        <div class="intensity-labels">
+                            <span class="intensity-label">£0</span>
+                            <span class="intensity-label">£5</span>
+                            <span class="intensity-label">£10</span>
+                        </div>
+                        <div class="intensity-value" id="costValue">£0.00</div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="entryNote">Note (optional):</label>
                     <textarea id="entryNote" placeholder="Add details about this entry (triggers, feelings, situation, etc.)..."></textarea>
@@ -974,6 +998,18 @@
                             <span class="intensity-label">Strong</span>
                         </div>
                         <div class="intensity-value" id="editIntensityValue">Medium</div>
+                    </div>
+                </div>
+                <div class="form-group" id="editCostGroup" style="display: none;">
+                    <label for="editCost">Cost:</label>
+                    <div class="intensity-slider-container">
+                        <input type="range" id="editCost" min="0" max="40" step="1" value="0" class="intensity-slider">
+                        <div class="intensity-labels">
+                            <span class="intensity-label">£0</span>
+                            <span class="intensity-label">£5</span>
+                            <span class="intensity-label">£10</span>
+                        </div>
+                        <div class="intensity-value" id="editCostValue">£0.00</div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -1287,6 +1323,14 @@
                 this.editIntensitySlider = document.getElementById('editIntensity');
                 this.editIntensityValue = document.getElementById('editIntensityValue');
                 this.editIntensityGroup = document.getElementById('editIntensityGroup');
+                
+                // Cost slider elements
+                this.costSlider = document.getElementById('entryCost');
+                this.costValue = document.getElementById('costValue');
+                this.costGroup = document.getElementById('costGroup');
+                this.editCostSlider = document.getElementById('editCost');
+                this.editCostValue = document.getElementById('editCostValue');
+                this.editCostGroup = document.getElementById('editCostGroup');
             }
 
             bindEvents() {
@@ -1324,6 +1368,14 @@
                 // Intensity slider events
                 this.intensitySlider.addEventListener('input', (e) => this.updateIntensityLabel(e.target.value, this.intensityValue));
                 this.editIntensitySlider.addEventListener('input', (e) => this.updateIntensityLabel(e.target.value, this.editIntensityValue));
+                
+                // Cost slider events
+                this.costSlider.addEventListener('input', (e) => this.updateCostLabel(e.target.value, this.costValue));
+                this.editCostSlider.addEventListener('input', (e) => this.updateCostLabel(e.target.value, this.editCostValue));
+                
+                // Entry type change events to show/hide appropriate sliders
+                document.getElementById('entryType').addEventListener('change', (e) => this.handleEntryTypeChange(e));
+                document.getElementById('editEntryType').addEventListener('change', (e) => this.handleEditEntryTypeChange(e));
                 
                 // Burger menu events
                 this.burgerBtn.addEventListener('click', () => this.toggleBurgerMenu());
@@ -1403,6 +1455,52 @@
                 labelElement.textContent = labels[parseInt(value)];
             }
 
+            updateCostLabel(value, labelElement) {
+                // Convert from 0-40 range to £0-£10 in £0.25 increments
+                const cost = (parseInt(value) * 0.25).toFixed(2);
+                labelElement.textContent = `£${cost}`;
+            }
+
+            handleEntryTypeChange(e) {
+                const type = e.target.value;
+                
+                // Show/hide intensity slider for cravings
+                if (type === 'craving') {
+                    this.intensityGroup.style.display = 'block';
+                    this.intensitySlider.value = 2;
+                    this.updateIntensityLabel(2, this.intensityValue);
+                } else {
+                    this.intensityGroup.style.display = 'none';
+                }
+                
+                // Show/hide cost slider for alcohol consumption
+                if (type === 'smoked' && this.currentCategory === 'alcohol') {
+                    this.costGroup.style.display = 'block';
+                    this.costSlider.value = 0;
+                    this.updateCostLabel(0, this.costValue);
+                } else {
+                    this.costGroup.style.display = 'none';
+                }
+            }
+
+            handleEditEntryTypeChange(e) {
+                const type = e.target.value;
+                
+                // Show/hide intensity slider for cravings
+                if (type === 'craving') {
+                    this.editIntensityGroup.style.display = 'block';
+                } else {
+                    this.editIntensityGroup.style.display = 'none';
+                }
+                
+                // Show/hide cost slider for alcohol consumption
+                if (type === 'smoked' && this.currentCategory === 'alcohol') {
+                    this.editCostGroup.style.display = 'block';
+                } else {
+                    this.editCostGroup.style.display = 'none';
+                }
+            }
+
             showEntryModal(type = null, isPastEntry = false) {
                 const now = new Date();
                 
@@ -1426,6 +1524,15 @@
                     this.updateIntensityLabel(2, this.intensityValue);
                 } else {
                     this.intensityGroup.style.display = 'none';
+                }
+                
+                // Show/hide cost slider based on category and entry type
+                if ((type === 'smoked' || (isPastEntry && !type)) && this.currentCategory === 'alcohol') {
+                    this.costGroup.style.display = 'block';
+                    this.costSlider.value = 0;
+                    this.updateCostLabel(0, this.costValue);
+                } else {
+                    this.costGroup.style.display = 'none';
                 }
                 
                 // Pre-fill form
@@ -1468,7 +1575,8 @@
                     timestamp: timestamp.toISOString(),
                     note: note,
                     date: timestamp.toDateString(),
-                    intensity: type === 'craving' ? parseInt(document.getElementById('entryIntensity').value) : null
+                    intensity: type === 'craving' ? parseInt(document.getElementById('entryIntensity').value) : null,
+                    cost: (type === 'smoked' && this.currentCategory === 'alcohol') ? (parseInt(document.getElementById('entryCost').value) * 0.25) : null
                 };
 
                 this.entries.push(entry);
@@ -1510,6 +1618,17 @@
                     editIntensityGroup.style.display = 'none';
                 }
                 
+                // Handle cost for alcohol consumption entries
+                const editCostGroup = document.getElementById('editCostGroup');
+                if (entry.type === 'smoked' && entry.category === 'alcohol') {
+                    editCostGroup.style.display = 'block';
+                    const costValue = entry.cost ? Math.round(entry.cost / 0.25) : 0; // Convert back to slider range (0-40)
+                    document.getElementById('editCost').value = costValue;
+                    this.updateCostLabel(costValue, this.editCostValue);
+                } else {
+                    editCostGroup.style.display = 'none';
+                }
+                
                 this.editEntryModal.style.display = 'block';
             }
 
@@ -1547,7 +1666,8 @@
                     timestamp: timestamp.toISOString(),
                     note: note,
                     date: timestamp.toDateString(),
-                    intensity: type === 'craving' ? parseInt(document.getElementById('editIntensity').value) : null
+                    intensity: type === 'craving' ? parseInt(document.getElementById('editIntensity').value) : null,
+                    cost: (type === 'smoked' && this.entries[entryIndex].category === 'alcohol') ? (parseInt(document.getElementById('editCost').value) * 0.25) : null
                 };
                 
                 // Re-sort entries by timestamp
@@ -1649,6 +1769,11 @@
                     const typeLabel = entry.type === 'craving' ? 'CRAVING' : 
                                     (entry.category === 'vaping' ? 'VAPED' : 'DRANK');
                     const typeColor = entry.type === 'craving' ? 'craving' : 'vaped';
+                    
+                    // Format cost display for alcohol entries
+                    const costDisplay = (entry.type === 'smoked' && entry.category === 'alcohol' && entry.cost !== null && entry.cost > 0) 
+                        ? `<div class="entry-cost">£${entry.cost.toFixed(2)}</div>` 
+                        : '';
 
                     return `
                         <div class="entry ${typeClass}">
@@ -1660,6 +1785,7 @@
                                     <button class="delete-btn" onclick="app.deleteEntry(${entry.id})" title="Delete entry">×</button>
                                 </div>
                             </div>
+                            ${costDisplay}
                             ${this.showNotes && entry.note ? `<div class="entry-note">"${entry.note}"</div>` : ''}
                         </div>
                     `;

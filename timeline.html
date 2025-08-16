@@ -569,6 +569,14 @@
             transform-origin: center;
         }
 
+        .cost-total {
+            font-size: 10px;
+            color: #9b59b6;
+            text-align: center;
+            margin-top: 2px;
+            font-weight: 600;
+        }
+
         .bar-value {
             position: absolute;
             top: -20px;
@@ -646,6 +654,19 @@
             font-size: 12px;
             color: #666;
             margin-top: 5px;
+        }
+
+        .summary-card.cost-card {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+        }
+
+        .summary-card.cost-card .summary-number {
+            color: white;
+        }
+
+        .summary-card.cost-card .summary-label {
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .empty-state {
@@ -733,6 +754,18 @@
             font-style: italic;
             margin-top: 5px;
             font-size: 14px;
+        }
+
+        .activity-cost {
+            color: #2d5a27;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 5px;
+            background: #e8f5e8;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            border: 1px solid #b8e6b8;
         }
 
         .activity-actions {
@@ -1261,6 +1294,18 @@
                         <div class="intensity-value" id="editIntensityValue">Medium</div>
                     </div>
                 </div>
+                <div class="form-group" id="editCostGroup" style="display: none;">
+                    <label for="editCost">Cost:</label>
+                    <div class="intensity-slider-container">
+                        <input type="range" id="editCost" min="0" max="40" step="1" value="0" class="intensity-slider">
+                        <div class="intensity-labels">
+                            <span class="intensity-label">£0</span>
+                            <span class="intensity-label">£5</span>
+                            <span class="intensity-label">£10</span>
+                        </div>
+                        <div class="intensity-value" id="editCostValue">£0.00</div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="editNote">Note (optional):</label>
                     <textarea id="editNote" placeholder="Add details about this entry..."></textarea>
@@ -1532,6 +1577,9 @@
                 this.editIntensity = document.getElementById('editIntensity');
                 this.editIntensityValue = document.getElementById('editIntensityValue');
                 this.editIntensityGroup = document.getElementById('editIntensityGroup');
+                this.editCost = document.getElementById('editCost');
+                this.editCostValue = document.getElementById('editCostValue');
+                this.editCostGroup = document.getElementById('editCostGroup');
                 this.editNote = document.getElementById('editNote');
                 this.cancelEditBtn = document.getElementById('cancelEditBtn');
             }
@@ -1615,6 +1663,12 @@
                     this.editIntensity.addEventListener('input', (e) => this.updateIntensityLabel(e.target.value, this.editIntensityValue));
                 } else {
                     console.error('editIntensity not found');
+                }
+                
+                if (this.editCost) {
+                    this.editCost.addEventListener('input', (e) => ModalUtils.updateCostLabel(e.target.value, this.editCostValue));
+                } else {
+                    console.error('editCost not found');
                 }
                 
                 // Close edit modal when clicking outside
@@ -1807,10 +1861,16 @@
                         }
                     }
                     
+                    // Add cost display if alcohol filter is active and there's a cost
+                    const costDisplay = (this.activeFilters.has('alcohol') && item.alcoholCost > 0) 
+                        ? `<div class="cost-total">£${item.alcoholCost.toFixed(2)}</div>` 
+                        : '';
+
                     return `
                         <div class="bar-group ${this.currentPeriod === 'day' ? 'day-view' : ''}">
                             ${barElements}
                             <div class="bar-label ${needsRotation ? 'rotated' : ''}">${item.label}</div>
+                            ${costDisplay}
                         </div>
                     `;
                 }).join('');
@@ -1886,12 +1946,18 @@
                             if (cravingsCount > 0 || vapedCount > 0) {
                             }
                             
+                            // Calculate alcohol cost total for this hour
+                            const alcoholCost = hourEntries
+                                .filter(e => e.type === 'smoked' && e.category === 'alcohol' && e.cost)
+                                .reduce((sum, e) => sum + e.cost, 0);
+
                             data.push({
                                 label: hourLabel,
                                 vapingCravings: hourEntries.filter(e => e.type === 'craving' && e.category === 'vaping').length,
                                 vapingConsumed: hourEntries.filter(e => e.type === 'smoked' && e.category === 'vaping').length,
                                 alcoholCravings: hourEntries.filter(e => e.type === 'craving' && e.category === 'alcohol').length,
                                 alcoholConsumed: hourEntries.filter(e => e.type === 'smoked' && e.category === 'alcohol').length,
+                                alcoholCost: alcoholCost,
                                 hour: hour
                             });
                         }
@@ -1914,12 +1980,18 @@
                                 return entryDate.toDateString() === weekDayString;
                             });
                             
+                            // Calculate alcohol cost total for this day
+                            const alcoholCost = dayEntries
+                                .filter(e => e.type === 'smoked' && e.category === 'alcohol' && e.cost)
+                                .reduce((sum, e) => sum + e.cost, 0);
+
                             data.push({
                                 label: weekDay.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
                                 vapingCravings: dayEntries.filter(e => e.type === 'craving' && e.category === 'vaping').length,
                                 vapingConsumed: dayEntries.filter(e => e.type === 'smoked' && e.category === 'vaping').length,
                                 alcoholCravings: dayEntries.filter(e => e.type === 'craving' && e.category === 'alcohol').length,
                                 alcoholConsumed: dayEntries.filter(e => e.type === 'smoked' && e.category === 'alcohol').length,
+                                alcoholCost: alcoholCost,
                                 date: weekDayString
                             });
                         }
@@ -1951,12 +2023,18 @@
                                 
                                 // Only add months that have data or are recent (last 3 months)
                                 if (monthEntries.length > 0 || i <= 2) {
+                                    // Calculate alcohol cost total for this month
+                                    const alcoholCost = monthEntries
+                                        .filter(e => e.type === 'smoked' && e.category === 'alcohol' && e.cost)
+                                        .reduce((sum, e) => sum + e.cost, 0);
+
                                     data.push({
                                         label: monthDate.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
                                         vapingCravings: monthEntries.filter(e => e.type === 'craving' && e.category === 'vaping').length,
                                         vapingConsumed: monthEntries.filter(e => e.type === 'smoked' && e.category === 'vaping').length,
                                         alcoholCravings: monthEntries.filter(e => e.type === 'craving' && e.category === 'alcohol').length,
-                                        alcoholConsumed: monthEntries.filter(e => e.type === 'smoked' && e.category === 'alcohol').length
+                                        alcoholConsumed: monthEntries.filter(e => e.type === 'smoked' && e.category === 'alcohol').length,
+                                        alcoholCost: alcoholCost
                                     });
                                 }
                             }
@@ -1967,12 +2045,19 @@
                         const years = [...new Set(this.entries.map(e => new Date(e.timestamp).getFullYear()))].sort();
                         years.forEach(year => {
                             const yearEntries = this.entries.filter(e => new Date(e.timestamp).getFullYear() === year);
+                            
+                            // Calculate alcohol cost total for this year
+                            const alcoholCost = yearEntries
+                                .filter(e => e.type === 'smoked' && e.category === 'alcohol' && e.cost)
+                                .reduce((sum, e) => sum + e.cost, 0);
+
                             data.push({
                                 label: year.toString(),
                                 vapingCravings: yearEntries.filter(e => e.type === 'craving' && e.category === 'vaping').length,
                                 vapingConsumed: yearEntries.filter(e => e.type === 'smoked' && e.category === 'vaping').length,
                                 alcoholCravings: yearEntries.filter(e => e.type === 'craving' && e.category === 'alcohol').length,
-                                alcoholConsumed: yearEntries.filter(e => e.type === 'smoked' && e.category === 'alcohol').length
+                                alcoholConsumed: yearEntries.filter(e => e.type === 'smoked' && e.category === 'alcohol').length,
+                                alcoholCost: alcoholCost
                             });
                         });
                         break;
@@ -1987,7 +2072,8 @@
                     vapingCravings: data.reduce((sum, item) => sum + item.vapingCravings, 0),
                     vapingConsumed: data.reduce((sum, item) => sum + item.vapingConsumed, 0),
                     alcoholCravings: data.reduce((sum, item) => sum + item.alcoholCravings, 0),
-                    alcoholConsumed: data.reduce((sum, item) => sum + item.alcoholConsumed, 0)
+                    alcoholConsumed: data.reduce((sum, item) => sum + item.alcoholConsumed, 0),
+                    alcoholCost: data.reduce((sum, item) => sum + (item.alcoholCost || 0), 0)
                 };
 
                 const periodLabels = {
@@ -2022,6 +2108,10 @@
                         <div class="summary-card">
                             <div class="summary-number">${totals.alcoholConsumed}</div>
                             <div class="summary-label">Drank ${periodLabels[this.currentPeriod]}</div>
+                        </div>
+                        <div class="summary-card cost-card">
+                            <div class="summary-number">£${totals.alcoholCost.toFixed(2)}</div>
+                            <div class="summary-label">Spent ${periodLabels[this.currentPeriod]}</div>
                         </div>
                     `;
                 }
@@ -2072,10 +2162,16 @@
                     const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
                     const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     
+                    // Add cost display if alcohol filter is active and there's a cost
+                    const costDisplay = (this.activeFilters.has('alcohol') && item.alcoholCost > 0) 
+                        ? `<div class="cost-total">£${item.alcoholCost.toFixed(2)}</div>` 
+                        : '';
+                    
                     return `
                         <div class="line-graph-label">
                             <div class="weekday">${weekday}</div>
                             <div class="date">${dateStr}</div>
+                            ${costDisplay}
                         </div>
                     `;
                 }).join('');
@@ -2283,10 +2379,16 @@
                         typeLabel = entry.type === 'craving' ? 'ALCOHOL CRAVING' : 'DRANK';
                     }
 
+                    // Format cost display for alcohol entries
+                    const costDisplay = (entry.type === 'smoked' && entry.category === 'alcohol' && entry.cost !== null && entry.cost > 0) 
+                        ? `<div class="activity-cost">£${entry.cost.toFixed(2)}</div>` 
+                        : '';
+                        
                     return `
                         <div class="activity-entry ${entryClass}" data-entry-id="${entry.id}">
                             <div>
                                 <div class="activity-time">${timeString}</div>
+                                ${costDisplay}
                                 ${this.showNotes && entry.note ? `<div class="activity-note">${entry.note}</div>` : ''}
                             </div>
                             <div class="activity-actions">
@@ -2528,7 +2630,10 @@
                     noteInput: this.editNote,
                     intensityGroup: this.editIntensityGroup,
                     intensitySlider: this.editIntensity,
-                    intensityValue: this.editIntensityValue
+                    intensityValue: this.editIntensityValue,
+                    costGroup: this.editCostGroup,
+                    costSlider: this.editCost,
+                    costValue: this.editCostValue
                 };
                 
                 ModalUtils.populateEditForm(entry, elements);
@@ -2586,7 +2691,8 @@
                         timestamp: timestamp.toISOString(),
                         note: note,
                         date: timestamp.toDateString(),
-                        intensity: type === 'craving' ? parseInt(this.editIntensity.value) : null
+                        intensity: type === 'craving' ? parseInt(this.editIntensity.value) : null,
+                        cost: (type === 'smoked' && entry.category === 'alcohol') ? (parseInt(this.editCost.value) * 0.25) : null
                     };
                     
                     // Re-sort entries by timestamp
