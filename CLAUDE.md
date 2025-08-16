@@ -26,6 +26,13 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - Update Recovery: Automatically restores data after app updates from GitHub
 - Cross-page sharing: Both pages access same DataStore instance
 
+**CSS Architecture**:
+- `styles.css`: Unified stylesheet serving both pages
+- Shared styles: Global layout, headers, modals, buttons, and common components
+- Page-specific styles: Timeline-specific (charts, filters) and index-specific (category tabs, entry buttons)
+- Mobile-responsive: Single media query section for all mobile optimizations
+- Class-based organization: `.main.timeline` for timeline-specific main padding
+
 ## Development
 
 **No Build Process**: Static HTML files that can be opened directly in a browser or served by any web server.
@@ -148,6 +155,7 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 ├── index.html          # Main tracking interface
 ├── timeline.html       # Analytics dashboard
 ├── shared-modal.js     # Shared modal utility functions
+├── styles.css          # Unified CSS stylesheet for both pages
 └── CLAUDE.md           # This file
 ```
 
@@ -156,7 +164,7 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 ### Adding New Categories
 1. Add new category option to tab buttons in index.html
 2. Update category validation in entry creation logic
-3. Add color scheme to timeline.html CSS for new category
+3. Add color scheme to styles.css for new category
 4. Update filtering logic in `TimelineView` class
 
 ### Adding a New Display Preference (e.g., another toggle)
@@ -203,4 +211,11 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - Test import/export maintains data integrity
 - Legacy entries get default category 'vaping' and intensity 2 for cravings
 - Cost field defaults to null for entries that don't support it (vaping entries, cravings)
-- to memorize
+
+### CSS Development
+- **Single stylesheet**: All styles are in `styles.css` - no separate CSS files per page
+- **Shared components**: Modal, button, and layout styles are reused across both pages
+- **Page-specific styles**: Use `.main.timeline` class for timeline-specific styling
+- **Mobile-first approach**: Base styles work on mobile, desktop enhancements in media queries
+- **Color scheme consistency**: All category colors defined once and reused throughout
+- **Responsive design**: Single `@media (max-width: 480px)` section handles all mobile adaptations
