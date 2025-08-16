@@ -1582,21 +1582,26 @@
             }
 
             bindEvents() {
-                this.todayBtn.addEventListener('click', () => window.location.href = 'index.html');
+                if (this.todayBtn) this.todayBtn.addEventListener('click', () => window.location.href = 'index.html');
                 
-                // Burger menu events
-                this.burgerBtn.addEventListener('click', () => this.toggleBurgerMenu());
-                this.burgerOverlay.addEventListener('click', () => this.closeBurgerMenu());
-                this.burgerCloseBtn.addEventListener('click', () => this.closeBurgerMenu());
-                this.burgerExportBtn.addEventListener('click', () => this.exportData());
-                this.burgerImportBtn.addEventListener('click', () => this.importFile.click());
-                this.importFile.addEventListener('change', (e) => this.importData(e));
-                this.burgerUpdateBtn.addEventListener('click', () => this.updateApp());
-                this.vapingToggle.addEventListener('click', () => this.toggleCategoryVisibility('vaping'));
-                this.alcoholToggle.addEventListener('click', () => this.toggleCategoryVisibility('alcohol'));
-                if (this.notesToggle) {
-                    this.notesToggle.addEventListener('click', () => this.toggleNotesVisibility());
+                // Burger menu events (persistent elements)
+                if (this.burgerBtn) {
+                    // Remove existing listener to prevent duplicates
+                    this.burgerBtn.removeEventListener('click', this.toggleBurgerMenuHandler);
+                    this.toggleBurgerMenuHandler = () => this.toggleBurgerMenu();
+                    this.burgerBtn.addEventListener('click', this.toggleBurgerMenuHandler);
                 }
+                
+                // Burger menu content events (recreated elements)
+                if (this.burgerOverlay) this.burgerOverlay.addEventListener('click', () => this.closeBurgerMenu());
+                if (this.burgerCloseBtn) this.burgerCloseBtn.addEventListener('click', () => this.closeBurgerMenu());
+                if (this.burgerExportBtn) this.burgerExportBtn.addEventListener('click', () => this.exportData());
+                if (this.burgerImportBtn) this.burgerImportBtn.addEventListener('click', () => this.importFile.click());
+                if (this.importFile) this.importFile.addEventListener('change', (e) => this.importData(e));
+                if (this.burgerUpdateBtn) this.burgerUpdateBtn.addEventListener('click', () => this.updateApp());
+                if (this.vapingToggle) this.vapingToggle.addEventListener('click', () => this.toggleCategoryVisibility('vaping'));
+                if (this.alcoholToggle) this.alcoholToggle.addEventListener('click', () => this.toggleCategoryVisibility('alcohol'));
+                if (this.notesToggle) this.notesToggle.addEventListener('click', () => this.toggleNotesVisibility());
                 
                 this.periodBtns.forEach(btn => {
                     btn.addEventListener('click', () => {
@@ -2518,6 +2523,16 @@
             }
 
             toggleBurgerMenu() {
+                // Check if burgerDropdown exists and reinitialize if needed
+                if (!this.burgerDropdown || !document.contains(this.burgerDropdown)) {
+                    this.burgerDropdown = document.getElementById('burgerDropdown');
+                }
+                
+                if (!this.burgerDropdown) {
+                    console.error('Burger dropdown not found');
+                    return;
+                }
+                
                 const isOpen = this.burgerDropdown.classList.contains('show');
                 if (isOpen) {
                     this.closeBurgerMenu();
@@ -2574,6 +2589,12 @@
                     statsSection.style.display = visibleCategories > 0 ? 'grid' : 'none';
                 }
                 
+                // Update toggle switches BEFORE any interface changes
+                if (this.vapingToggle && this.alcoholToggle) {
+                    this.vapingToggle.classList.toggle('active', this.categoryVisibility.vaping);
+                    this.alcoholToggle.classList.toggle('active', this.categoryVisibility.alcohol);
+                }
+                
                 // If transitioning from empty state to having visible categories, restore the interface
                 if (!skipInterfaceRestore && isEmptyState && visibleCategories > 0) {
                     this.restoreFullInterface();
@@ -2584,12 +2605,6 @@
                 if (visibleCategories === 0) {
                     this.showEmptyState();
                     return;
-                }
-                
-                // Update toggle switches if they exist
-                if (this.vapingToggle && this.alcoholToggle) {
-                    this.vapingToggle.classList.toggle('active', this.categoryVisibility.vaping);
-                    this.alcoholToggle.classList.toggle('active', this.categoryVisibility.alcohol);
                 }
 
                 // Update filter buttons based on visibility
@@ -2768,24 +2783,15 @@
                 main.innerHTML = `
                     <input type="file" id="importFile" accept=".json" style="display: none;">
                     <div class="burger-overlay" id="burgerOverlay"></div>
+                    
                     <div class="empty-state" style="padding: 60px 20px; text-align: center;">
                         <h3 style="color: #a0aec0; margin-bottom: 15px;">No Categories Enabled</h3>
                         <p style="color: #a0aec0;">Enable at least one category in the menu (☰) to start viewing timeline data.</p>
                     </div>
                 `;
-                // Re-bind events since elements were recreated
-                this.importFile = document.getElementById('importFile');
-                this.burgerOverlay = document.getElementById('burgerOverlay');
-                this.importFile.addEventListener('change', (e) => this.importData(e));
-                this.burgerOverlay.addEventListener('click', () => this.closeBurgerMenu());
-                
-                // Update toggle references and visual state
-                this.vapingToggle = document.getElementById('vapingToggle');
-                this.alcoholToggle = document.getElementById('alcoholToggle');
-                if (this.vapingToggle && this.alcoholToggle) {
-                    this.vapingToggle.classList.toggle('active', this.categoryVisibility.vaping);
-                    this.alcoholToggle.classList.toggle('active', this.categoryVisibility.alcohol);
-                }
+                // Re-initialize all elements and events since main content was recreated
+                this.initializeElements();
+                this.bindEvents();
             }
 
             restoreFullInterface() {

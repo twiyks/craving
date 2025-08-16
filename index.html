@@ -340,17 +340,6 @@
             transform: translateY(0);
         }
 
-        .add-past-btn {
-            width: 100%;
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
 
         .note-section {
             margin-bottom: 30px;
@@ -731,11 +720,6 @@
                 height: 60px;
             }
 
-            .add-past-btn {
-                padding: 10px;
-                margin-bottom: 15px;
-                font-size: 13px;
-            }
 
             .data-controls {
                 margin-bottom: 15px !important;
@@ -888,9 +872,6 @@
                 </button>
             </div>
 
-            <button class="add-past-btn" id="addPastBtn">
-                📅 Add Past Entry
-            </button>
 
             <input type="file" id="importFile" accept=".json" style="display: none;">
             <div class="burger-overlay" id="burgerOverlay"></div>
@@ -1268,7 +1249,6 @@
                 this.warningMessage = document.getElementById('warningMessage');
                 this.historyContainer = document.getElementById('entryHistory');
                 this.clearBtn = document.getElementById('clearBtn');
-                this.addPastBtn = document.getElementById('addPastBtn');
                 this.exportBtn = document.getElementById('exportBtn');
                 this.importBtn = document.getElementById('importBtn');
                 this.importFile = document.getElementById('importFile');
@@ -1331,23 +1311,40 @@
             }
 
             bindEvents() {
-                this.cravingBtn.addEventListener('click', () => this.showEntryModal('craving'));
-                this.smokedBtn.addEventListener('click', () => this.showEntryModal('smoked'));
-                this.clearBtn.addEventListener('click', () => this.clearHistory());
-                this.addPastBtn.addEventListener('click', () => this.showEntryModal(null, true));
-                this.burgerExportBtn.addEventListener('click', () => this.exportData());
-                this.burgerImportBtn.addEventListener('click', () => this.importFile.click());
-                this.importFile.addEventListener('change', (e) => this.importData(e));
-                this.burgerUpdateBtn.addEventListener('click', () => this.updateApp());
-                this.timelineBtn.addEventListener('click', () => window.location.href = 'timeline.html');
-                this.cancelEntryBtn.addEventListener('click', () => this.hideEntryModal());
-                this.entryForm.addEventListener('submit', (e) => this.handleEntrySubmit(e));
-                this.cancelEditBtn.addEventListener('click', () => this.hideEditEntryModal());
-                this.editEntryForm.addEventListener('submit', (e) => this.handleEditEntrySubmit(e));
+                // Main interface events
+                if (this.cravingBtn) this.cravingBtn.addEventListener('click', () => this.showEntryModal('craving'));
+                if (this.smokedBtn) this.smokedBtn.addEventListener('click', () => this.showEntryModal('smoked'));
+                if (this.clearBtn) this.clearBtn.addEventListener('click', () => this.clearHistory());
+                if (this.timelineBtn) this.timelineBtn.addEventListener('click', () => window.location.href = 'timeline.html');
+                
+                // Modal events
+                if (this.cancelEntryBtn) this.cancelEntryBtn.addEventListener('click', () => this.hideEntryModal());
+                if (this.entryForm) this.entryForm.addEventListener('submit', (e) => this.handleEntrySubmit(e));
+                if (this.cancelEditBtn) this.cancelEditBtn.addEventListener('click', () => this.hideEditEntryModal());
+                if (this.editEntryForm) this.editEntryForm.addEventListener('submit', (e) => this.handleEditEntrySubmit(e));
+                
+                // Burger menu events (persistent elements)
+                if (this.burgerBtn) {
+                    // Remove existing listener to prevent duplicates
+                    this.burgerBtn.removeEventListener('click', this.toggleBurgerMenuHandler);
+                    this.toggleBurgerMenuHandler = () => this.toggleBurgerMenu();
+                    this.burgerBtn.addEventListener('click', this.toggleBurgerMenuHandler);
+                }
+                
+                // Burger menu content events (recreated elements)
+                if (this.burgerOverlay) this.burgerOverlay.addEventListener('click', () => this.closeBurgerMenu());
+                if (this.burgerCloseBtn) this.burgerCloseBtn.addEventListener('click', () => this.closeBurgerMenu());
+                if (this.burgerExportBtn) this.burgerExportBtn.addEventListener('click', () => this.exportData());
+                if (this.burgerImportBtn) this.burgerImportBtn.addEventListener('click', () => this.importFile.click());
+                if (this.importFile) this.importFile.addEventListener('change', (e) => this.importData(e));
+                if (this.burgerUpdateBtn) this.burgerUpdateBtn.addEventListener('click', () => this.updateApp());
+                if (this.vapingToggle) this.vapingToggle.addEventListener('click', () => this.toggleCategoryVisibility('vaping'));
+                if (this.alcoholToggle) this.alcoholToggle.addEventListener('click', () => this.toggleCategoryVisibility('alcohol'));
+                if (this.notesToggle) this.notesToggle.addEventListener('click', () => this.toggleNotesVisibility());
                 
                 // Tab event listeners
-                this.vapingTab.addEventListener('click', () => this.switchCategory('vaping'));
-                this.alcoholTab.addEventListener('click', () => this.switchCategory('alcohol'));
+                if (this.vapingTab) this.vapingTab.addEventListener('click', () => this.switchCategory('vaping'));
+                if (this.alcoholTab) this.alcoholTab.addEventListener('click', () => this.switchCategory('alcohol'));
                 
                 // Close modal when clicking outside
                 this.entryModal.addEventListener('click', (e) => {
@@ -1373,16 +1370,6 @@
                 // Entry type change events to show/hide appropriate sliders
                 document.getElementById('entryType').addEventListener('change', (e) => this.handleEntryTypeChange(e));
                 document.getElementById('editEntryType').addEventListener('change', (e) => this.handleEditEntryTypeChange(e));
-                
-                // Burger menu events
-                this.burgerBtn.addEventListener('click', () => this.toggleBurgerMenu());
-                this.burgerOverlay.addEventListener('click', () => this.closeBurgerMenu());
-                this.burgerCloseBtn.addEventListener('click', () => this.closeBurgerMenu());
-                this.vapingToggle.addEventListener('click', () => this.toggleCategoryVisibility('vaping'));
-                this.alcoholToggle.addEventListener('click', () => this.toggleCategoryVisibility('alcohol'));
-                if (this.notesToggle) {
-                    this.notesToggle.addEventListener('click', () => this.toggleNotesVisibility());
-                }
             }
 
             switchCategory(category) {
@@ -1498,24 +1485,19 @@
                 }
             }
 
-            showEntryModal(type = null, isPastEntry = false) {
+            showEntryModal(type = null) {
                 const now = new Date();
                 
                 // Set modal title and button text
-                if (isPastEntry) {
-                    this.entryModalTitle.textContent = 'Add Past Entry';
-                    this.submitEntryBtn.textContent = 'Add Entry';
+                if (type === 'craving') {
+                    this.entryModalTitle.textContent = this.currentCategory === 'vaping' ? 'Record Vape Craving' : 'Record Alcohol Craving';
                 } else {
-                    if (type === 'craving') {
-                        this.entryModalTitle.textContent = this.currentCategory === 'vaping' ? 'Record Vape Craving' : 'Record Alcohol Craving';
-                    } else {
-                        this.entryModalTitle.textContent = this.currentCategory === 'vaping' ? 'Record Vaping' : 'Record Drink';
-                    }
-                    this.submitEntryBtn.textContent = 'Save Entry';
+                    this.entryModalTitle.textContent = this.currentCategory === 'vaping' ? 'Record Vaping' : 'Record Drink';
                 }
+                this.submitEntryBtn.textContent = 'Save Entry';
                 
                 // Show/hide intensity slider based on entry type
-                if (type === 'craving' || (isPastEntry && !type)) {
+                if (type === 'craving') {
                     this.intensityGroup.style.display = 'block';
                     this.intensitySlider.value = 2;
                     this.updateIntensityLabel(2, this.intensityValue);
@@ -1524,7 +1506,7 @@
                 }
                 
                 // Show/hide cost slider based on category and entry type
-                if ((type === 'smoked' || (isPastEntry && !type)) && this.currentCategory === 'alcohol') {
+                if (type === 'smoked' && this.currentCategory === 'alcohol') {
                     this.costGroup.style.display = 'block';
                     this.costSlider.value = 0;
                     this.updateCostLabel(0, this.costValue);
@@ -1907,6 +1889,16 @@
             }
 
             toggleBurgerMenu() {
+                // Check if burgerDropdown exists and reinitialize if needed
+                if (!this.burgerDropdown || !document.contains(this.burgerDropdown)) {
+                    this.burgerDropdown = document.getElementById('burgerDropdown');
+                }
+                
+                if (!this.burgerDropdown) {
+                    console.error('Burger dropdown not found');
+                    return;
+                }
+                
                 const isOpen = this.burgerDropdown.classList.contains('show');
                 if (isOpen) {
                     this.closeBurgerMenu();
@@ -1964,6 +1956,12 @@
                     statsSection.style.display = visibleCategories > 0 ? 'grid' : 'none';
                 }
                 
+                // Update toggle switches BEFORE any interface changes
+                if (this.vapingToggle && this.alcoholToggle) {
+                    this.vapingToggle.classList.toggle('active', this.categoryVisibility.vaping);
+                    this.alcoholToggle.classList.toggle('active', this.categoryVisibility.alcohol);
+                }
+                
                 // If transitioning from empty state to having visible categories, restore the interface
                 if (!skipInterfaceRestore && isEmptyState && visibleCategories > 0) {
                     this.restoreFullInterface();
@@ -1974,12 +1972,6 @@
                 if (visibleCategories === 0) {
                     this.showEmptyState();
                     return;
-                }
-                
-                // Update toggle switches if they exist
-                if (this.vapingToggle && this.alcoholToggle) {
-                    this.vapingToggle.classList.toggle('active', this.categoryVisibility.vaping);
-                    this.alcoholToggle.classList.toggle('active', this.categoryVisibility.alcohol);
                 }
 
                 // Get category tabs
@@ -2020,26 +2012,20 @@
             showEmptyState() {
                 const main = document.querySelector('.main');
                 main.innerHTML = `
+                    <div class="success-message" id="successMessage"></div>
+                    <div class="warning-message" id="warningMessage"></div>
+                    
                     <input type="file" id="importFile" accept=".json" style="display: none;">
                     <div class="burger-overlay" id="burgerOverlay"></div>
+                    
                     <div class="empty-state" style="padding: 60px 20px; text-align: center;">
                         <h3 style="color: #a0aec0; margin-bottom: 15px;">No Categories Enabled</h3>
                         <p style="color: #a0aec0;">Enable at least one category in the menu (☰) to start tracking.</p>
                     </div>
                 `;
-                // Re-bind the import file event since the element was recreated
-                this.importFile = document.getElementById('importFile');
-                this.burgerOverlay = document.getElementById('burgerOverlay');
-                this.importFile.addEventListener('change', (e) => this.importData(e));
-                this.burgerOverlay.addEventListener('click', () => this.closeBurgerMenu());
-                
-                // Update toggle references and visual state
-                this.vapingToggle = document.getElementById('vapingToggle');
-                this.alcoholToggle = document.getElementById('alcoholToggle');
-                if (this.vapingToggle && this.alcoholToggle) {
-                    this.vapingToggle.classList.toggle('active', this.categoryVisibility.vaping);
-                    this.alcoholToggle.classList.toggle('active', this.categoryVisibility.alcohol);
-                }
+                // Re-initialize all elements and events since main content was recreated
+                this.initializeElements();
+                this.bindEvents();
             }
 
             restoreFullInterface() {
@@ -2067,9 +2053,6 @@
                         </button>
                     </div>
 
-                    <button class="add-past-btn" id="addPastBtn">
-                        📅 Add Past Entry
-                    </button>
 
                     <input type="file" id="importFile" accept=".json" style="display: none;">
                     <div class="burger-overlay" id="burgerOverlay"></div>
