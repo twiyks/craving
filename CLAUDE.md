@@ -203,3 +203,4 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - Test import/export maintains data integrity
 - Legacy entries get default category 'vaping' and intensity 2 for cravings
 - Cost field defaults to null for entries that don't support it (vaping entries, cravings)
+- to memorize

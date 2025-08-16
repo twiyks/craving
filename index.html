@@ -69,24 +69,21 @@
         }
 
         .burger-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
+            position: fixed;
+            top: auto;
+            right: 20px;
             background: white;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             min-width: 280px;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+            z-index: 1001;
+            display: none;
         }
 
         .burger-dropdown.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+            display: block;
         }
 
         .burger-header {
@@ -1919,6 +1916,11 @@
             }
 
             openBurgerMenu() {
+                // Position the dropdown relative to the burger button
+                const burgerRect = this.burgerBtn.getBoundingClientRect();
+                this.burgerDropdown.style.top = `${burgerRect.bottom + 5}px`;
+                this.burgerDropdown.style.right = `${window.innerWidth - burgerRect.right}px`;
+                
                 this.burgerDropdown.classList.add('show');
                 this.burgerOverlay.classList.add('show');
             }
@@ -1956,13 +1958,19 @@
                 const visibleCategories = Object.values(this.categoryVisibility).filter(visible => visible).length;
                 const isEmptyState = document.querySelector('.main .empty-state') !== null && !document.querySelector('.category-tabs');
                 
+                // Show/hide header stats based on category visibility
+                const statsSection = document.querySelector('.stats');
+                if (statsSection) {
+                    statsSection.style.display = visibleCategories > 0 ? 'grid' : 'none';
+                }
+                
                 // If transitioning from empty state to having visible categories, restore the interface
                 if (!skipInterfaceRestore && isEmptyState && visibleCategories > 0) {
                     this.restoreFullInterface();
                     return;
                 }
                 
-                // If no categories are visible, show empty state
+                // If no categories are visible, show empty state for main content only
                 if (visibleCategories === 0) {
                     this.showEmptyState();
                     return;
