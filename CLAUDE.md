@@ -43,6 +43,7 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - **Dual category support**: Tab-based interface for vaping (💨) and alcohol (🍷) tracking
 - **Modal-based entry creation**: All entries created through modal with date/time/note fields
 - **Craving intensity slider**: 3-level intensity scale (Mild, Medium, Strong) for cravings
+- **Cost tracking**: Alcohol consumption entries include cost field (£0.00-£10.00 range)
 - **Entry editing**: Edit any previous entry (date, time, type, note, intensity)
 - **Entry deletion**: Delete entries with confirmation dialog
 - **Navigation**: Seamless switching between Today and Timeline views
@@ -61,6 +62,7 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - **Interactive charts**: Hover values and scrollable day view
 - **Entry management**: Edit and delete entries directly from timeline day view
 - **Notes visibility toggle**: Burger menu option affects day activity list note display
+- **Cost analytics**: Total spending displayed per time period when alcohol filter is active
 
 ### Technical Features
 - **PWA capabilities**: Offline support, installable, cached resources
@@ -97,7 +99,8 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
   timestamp: ISO_string,            // Full date/time
   note: string,                     // Optional user note
   date: date_string,                // Cached toDateString() for filtering
-  intensity: 1|2|3                  // Craving intensity (1=Mild, 2=Medium, 3=Strong) - only for cravings
+  intensity: 1|2|3,                 // Craving intensity (1=Mild, 2=Medium, 3=Strong) - only for cravings
+  cost: number                      // Cost in GBP - only for alcohol consumption entries
 }
 ```
 
@@ -124,6 +127,14 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - **Dual chart types**: Bar charts for day/month/year views, line graph for week view
 - **Color coding**: Each category has distinct color scheme (vaping: blue/red, alcohol: purple/orange)
 - **Dynamic switching**: Chart type changes automatically based on selected time period
+
+### Cost Tracking System
+- **Entry-level costs**: Alcohol consumption entries can include cost (£0.00-£10.00 range)
+- **Cost slider**: Range input with 0.25 increments, displayed as currency
+- **Timeline aggregation**: Cost totals calculated per time period (day/week/month/year)
+- **Visual display**: Cost totals shown below time period labels when alcohol filter active
+- **Summary analytics**: Purple cost summary card shows total spending for selected period
+- **Conditional visibility**: Cost features only appear for alcohol category consumption entries
 
 ### Navigation Pattern
 - Both pages share identical header with navigation buttons
@@ -173,6 +184,13 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - Legacy entries auto-migrate to intensity 2
 - Slider component has CSS classes: `.intensity-slider`, `.intensity-labels`, `.intensity-value`
 
+### Working with Cost Data
+- Cost values: £0.00 to £10.00 in £0.25 increments (slider range 0-40, multiplied by 0.25)
+- Only applies to alcohol consumption entries (`type: 'smoked' && category: 'alcohol'`)
+- Cost slider shares CSS classes with intensity slider: `.intensity-slider`, `.intensity-value`
+- Timeline aggregation sums costs per time period: `alcoholCost` field in data objects
+- Display styling: `.cost-total` for individual period totals, `.cost-card` for summary cards
+
 ### Entry Management
 - **Edit functionality**: Both pages support full entry editing via shared modal system
 - **Delete functionality**: Confirmation dialog ("Are you sure you want to delete this entry?")
@@ -181,6 +199,7 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 
 ### Data Migration
 - Check `initializeApp()` methods in both classes for auto-migration logic
-- Update backup/restore logic handles new data fields (category, intensity)
+- Update backup/restore logic handles new data fields (category, intensity, cost)
 - Test import/export maintains data integrity
 - Legacy entries get default category 'vaping' and intensity 2 for cravings
+- Cost field defaults to null for entries that don't support it (vaping entries, cravings)

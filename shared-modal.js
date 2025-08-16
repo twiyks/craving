@@ -13,6 +13,15 @@ class ModalUtils {
         }
     }
 
+    // Update cost label display
+    static updateCostLabel(value, labelElement) {
+        if (labelElement) {
+            // Convert from 0-40 range to £0-£10 in £0.25 increments
+            const cost = (parseInt(value) * 0.25).toFixed(2);
+            labelElement.textContent = `£${cost}`;
+        }
+    }
+
     // Update type select options based on category
     static updateTypeOptions(selectElement, category) {
         if (category === 'vaping') {
@@ -35,6 +44,13 @@ class ModalUtils {
         }
     }
 
+    // Toggle cost visibility based on entry type and category
+    static toggleCostVisibility(costGroup, type, category) {
+        if (costGroup) {
+            costGroup.style.display = (type === 'smoked' && category === 'alcohol') ? 'block' : 'none';
+        }
+    }
+
     // Validate entry data
     static validateEntry(date, time) {
         const timestamp = new Date(`${date}T${time}`);
@@ -53,7 +69,7 @@ class ModalUtils {
     }
 
     // Create entry data object from form inputs
-    static createEntryData(type, date, time, note, category, intensityValue = null) {
+    static createEntryData(type, date, time, note, category, intensityValue = null, costValue = null) {
         const timestamp = new Date(`${date}T${time}`);
         
         return {
@@ -63,7 +79,8 @@ class ModalUtils {
             timestamp: timestamp.toISOString(),
             note: note,
             date: timestamp.toDateString(),
-            intensity: type === 'craving' ? intensityValue : null
+            intensity: type === 'craving' ? intensityValue : null,
+            cost: (type === 'smoked' && category === 'alcohol' && costValue !== null) ? costValue : null
         };
     }
 
@@ -95,6 +112,15 @@ class ModalUtils {
         }
     }
 
+    // Setup cost slider event handler
+    static setupCostSlider(slider, valueDisplay) {
+        if (slider && valueDisplay) {
+            slider.addEventListener('input', (e) => {
+                this.updateCostLabel(e.target.value, valueDisplay);
+            });
+        }
+    }
+
     // Populate edit form with entry data
     static populateEditForm(entry, elements) {
         const entryDate = new Date(entry.timestamp);
@@ -114,6 +140,16 @@ class ModalUtils {
             const intensity = entry.intensity || 2;
             elements.intensitySlider.value = intensity;
             this.updateIntensityLabel(intensity, elements.intensityValue);
+        }
+        
+        // Handle cost
+        if (elements.costGroup) {
+            this.toggleCostVisibility(elements.costGroup, entry.type, entry.category);
+            if (entry.type === 'smoked' && entry.category === 'alcohol' && elements.costSlider) {
+                const costValue = entry.cost ? Math.round(entry.cost / 0.25) : 0; // Convert back to slider range (0-40)
+                elements.costSlider.value = costValue;
+                this.updateCostLabel(costValue, elements.costValue);
+            }
         }
     }
 
