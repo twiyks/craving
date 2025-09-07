@@ -85,21 +85,11 @@
                             <div class="stat-number" id="todayCravings">0</div>
                             <div class="stat-label">Today</div>
                         </div>
-                        <div class="stat">
-                            <div class="stat-number" id="totalCravings">0</div>
-                            <div class="stat-label">Total</div>
-                        </div>
                     </div>
                 </div>
                 <div class="stat-group">
                     <h4>Vape Free</h4>
                     <div class="smoke-free-time" id="smokeFreeTime">0d 0h</div>
-                    <div class="stat-row">
-                        <div class="stat">
-                            <div class="stat-number" id="totalSmoked">0</div>
-                            <div class="stat-label">Total Vaped</div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="nav-buttons">
@@ -119,16 +109,23 @@
                 <button class="period-btn" data-period="year">Year</button>
             </div>
 
-            <div class="filter-controls">
-                <button class="filter-btn active" data-filter="all" id="allFilter">
-                    📊 All Data
-                </button>
-                <button class="filter-btn active" data-filter="vaping" id="vapingFilter">
-                    💨 Vaping
-                </button>
-                <button class="filter-btn active" data-filter="alcohol" id="alcoholFilter">
-                    🍷 Alcohol
-                </button>
+            <div class="interactive-legend" id="interactiveLegend">
+                <div class="legend-item clickable active" data-filter="vapingCravings" id="vapingCravingsLegend">
+                    <div class="legend-color cravings"></div>
+                    <span>Vaping Cravings</span>
+                </div>
+                <div class="legend-item clickable active" data-filter="vapingConsumed" id="vapingConsumedLegend">
+                    <div class="legend-color vaped"></div>
+                    <span>Vaped</span>
+                </div>
+                <div class="legend-item clickable active" data-filter="alcoholCravings" id="alcoholCravingsLegend">
+                    <div class="legend-color alcohol-cravings"></div>
+                    <span>Alcohol Cravings</span>
+                </div>
+                <div class="legend-item clickable active" data-filter="alcoholConsumed" id="alcoholConsumedLegend">
+                    <div class="legend-color alcohol-consumed"></div>
+                    <span>Drank</span>
+                </div>
             </div>
 
             <div class="timeline-chart">
@@ -159,24 +156,6 @@
                                 No data available for the selected period.
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="legend" id="chartLegend">
-                    <div class="legend-item">
-                        <div class="legend-color cravings"></div>
-                        <span>Vaping Cravings</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color vaped"></div>
-                        <span>Vaped</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color alcohol-cravings"></div>
-                        <span>Alcohol Cravings</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color alcohol-consumed"></div>
-                        <span>Drank</span>
                     </div>
                 </div>
             </div>
@@ -403,7 +382,7 @@
                 this.dataStore = new DataStore();
                 this.entries = [];
                 this.currentPeriod = 'day';
-                this.activeFilters = new Set(['vaping', 'alcohol']); // Start with all categories enabled
+                this.activeDataSets = new Set(['vapingCravings', 'vapingConsumed', 'alcoholCravings', 'alcoholConsumed']); // Start with all data sets enabled
                 this.selectedDate = new Date(); // Track selected date for day view
                 this.weekOffset = parseInt(sessionStorage.getItem('timelineWeekOffset')) || 0; // Persist across refreshes
                 this.monthOffset = parseInt(sessionStorage.getItem('timelineMonthOffset')) || 0; // Persist across refreshes
@@ -460,11 +439,13 @@
                 this.yAxis = document.getElementById('yAxis');
                 this.summaryStats = document.getElementById('summaryStats');
                 
-                // Filter elements
-                this.allFilter = document.getElementById('allFilter');
-                this.vapingFilter = document.getElementById('vapingFilter');
-                this.alcoholFilter = document.getElementById('alcoholFilter');
-                this.filterBtns = document.querySelectorAll('.filter-btn');
+                // Interactive legend elements
+                this.interactiveLegend = document.getElementById('interactiveLegend');
+                this.vapingCravingsLegend = document.getElementById('vapingCravingsLegend');
+                this.vapingConsumedLegend = document.getElementById('vapingConsumedLegend');
+                this.alcoholCravingsLegend = document.getElementById('alcoholCravingsLegend');
+                this.alcoholConsumedLegend = document.getElementById('alcoholConsumedLegend');
+                this.legendItems = document.querySelectorAll('.legend-item.clickable');
                 
                 // Date navigation elements
                 this.dateNavigation = document.getElementById('dateNavigation');
@@ -553,10 +534,13 @@
                     });
                 });
 
-                // Filter event handlers
-                this.allFilter.addEventListener('click', () => this.toggleAllFilters());
-                this.vapingFilter.addEventListener('click', () => this.toggleFilter('vaping'));
-                this.alcoholFilter.addEventListener('click', () => this.toggleFilter('alcohol'));
+                // Interactive legend event handlers
+                this.legendItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        const dataSet = item.dataset.filter;
+                        this.toggleDataSet(dataSet);
+                    });
+                });
 
                 // Date navigation event handlers
                 this.selectedDateInput.addEventListener('change', (e) => this.changeSelectedDate(new Date(e.target.value)));
@@ -646,27 +630,34 @@
                 this.renderDayActivity();
             }
 
-            toggleAllFilters() {
-                // Set both categories active and update button states
-                this.activeFilters = new Set(['vaping', 'alcohol']);
-                this.allFilter.classList.add('active');
-                this.vapingFilter.classList.remove('active');
-                this.alcoholFilter.classList.remove('active');
+            toggleDataSet(dataSet) {
+                // Toggle the specific data set
+                if (this.activeDataSets.has(dataSet)) {
+                    this.activeDataSets.delete(dataSet);
+                } else {
+                    this.activeDataSets.add(dataSet);
+                }
                 
+                // Update legend item visual state
+                this.updateLegendStates();
                 this.renderChart();
             }
 
-            toggleFilter(filter) {
-                // Clear all active filters and set only the selected one
-                this.activeFilters.clear();
-                this.activeFilters.add(filter);
-                
-                // Update button states - only the selected filter is active
-                this.vapingFilter.classList.toggle('active', filter === 'vaping');
-                this.alcoholFilter.classList.toggle('active', filter === 'alcohol');
-                this.allFilter.classList.remove('active');
-                
-                this.renderChart();
+            updateLegendStates() {
+                // Update the visual state of legend items based on active data sets and category visibility
+                this.legendItems.forEach(item => {
+                    const dataSet = item.dataset.filter;
+                    const category = dataSet.includes('vaping') ? 'vaping' : 'alcohol';
+                    
+                    // Hide legend items for invisible categories
+                    const isVisible = this.categoryVisibility[category];
+                    item.style.display = isVisible ? 'flex' : 'none';
+                    
+                    // Update active state based on data set selection
+                    const isActive = this.activeDataSets.has(dataSet) && isVisible;
+                    item.classList.toggle('active', isActive);
+                    item.classList.toggle('inactive', !isActive && isVisible);
+                });
             }
 
             updateHeaderStats() {
@@ -781,15 +772,13 @@
                     return;
                 }
 
-                // Calculate max value considering all four categories and active filters
+                // Calculate max value considering active data sets
                 const maxValue = Math.max(...data.map(d => {
                     const values = [];
-                    if (this.activeFilters.has('vaping')) {
-                        values.push(d.vapingCravings, d.vapingConsumed);
-                    }
-                    if (this.activeFilters.has('alcohol')) {
-                        values.push(d.alcoholCravings, d.alcoholConsumed);
-                    }
+                    if (this.activeDataSets.has('vapingCravings')) values.push(d.vapingCravings);
+                    if (this.activeDataSets.has('vapingConsumed')) values.push(d.vapingConsumed);
+                    if (this.activeDataSets.has('alcoholCravings')) values.push(d.alcoholCravings);
+                    if (this.activeDataSets.has('alcoholConsumed')) values.push(d.alcoholConsumed);
                     return Math.max(...values, 0);
                 }), 1); // Ensure minimum of 1
                 
@@ -813,35 +802,44 @@
                     // Calculate heights in pixels - chart area is ~220px (260px - 40px padding)
                     const chartHeight = 220;
                     
-                    // Only show bars for active filters
+                    // Only show bars for active data sets
                     let barElements = '';
                     
-                    if (this.activeFilters.has('vaping')) {
+                    // Vaping cravings
+                    if (this.activeDataSets.has('vapingCravings')) {
                         const vapingCravingsHeight = (item.vapingCravings / maxValue) * chartHeight;
-                        const vapingConsumedHeight = (item.vapingConsumed / maxValue) * chartHeight;
-                        
                         if (vapingCravingsHeight > 0) {
                             barElements += `<div class="bar cravings" style="height: ${vapingCravingsHeight}px;"><div class="bar-value">${item.vapingCravings}</div></div>`;
                         }
+                    }
+                    
+                    // Vaping consumed
+                    if (this.activeDataSets.has('vapingConsumed')) {
+                        const vapingConsumedHeight = (item.vapingConsumed / maxValue) * chartHeight;
                         if (vapingConsumedHeight > 0) {
                             barElements += `<div class="bar vaped" style="height: ${vapingConsumedHeight}px;"><div class="bar-value">${item.vapingConsumed}</div></div>`;
                         }
                     }
                     
-                    if (this.activeFilters.has('alcohol')) {
+                    // Alcohol cravings
+                    if (this.activeDataSets.has('alcoholCravings')) {
                         const alcoholCravingsHeight = (item.alcoholCravings / maxValue) * chartHeight;
-                        const alcoholConsumedHeight = (item.alcoholConsumed / maxValue) * chartHeight;
-                        
                         if (alcoholCravingsHeight > 0) {
                             barElements += `<div class="bar alcohol-cravings" style="height: ${alcoholCravingsHeight}px;"><div class="bar-value">${item.alcoholCravings}</div></div>`;
                         }
+                    }
+                    
+                    // Alcohol consumed
+                    if (this.activeDataSets.has('alcoholConsumed')) {
+                        const alcoholConsumedHeight = (item.alcoholConsumed / maxValue) * chartHeight;
                         if (alcoholConsumedHeight > 0) {
                             barElements += `<div class="bar alcohol-consumed" style="height: ${alcoholConsumedHeight}px;"><div class="bar-value">${item.alcoholConsumed}</div></div>`;
                         }
                     }
                     
-                    // Add cost display if alcohol filter is active and there's a cost
-                    const costDisplay = (this.activeFilters.has('alcohol') && item.alcoholCost > 0) 
+                    // Add cost display if any alcohol data set is active and there's a cost
+                    const showAlcoholCosts = this.activeDataSets.has('alcoholCravings') || this.activeDataSets.has('alcoholConsumed');
+                    const costDisplay = (showAlcoholCosts && item.alcoholCost > 0) 
                         ? `<div class="cost-total">£${item.alcoholCost.toFixed(2)}</div>` 
                         : '';
 
@@ -1062,15 +1060,20 @@
                     year: 'This Period'
                 };
 
-                // Only show cards for active filters
+                // Only show cards for active data sets
                 let cardsHTML = '';
                 
-                if (this.activeFilters.has('vaping')) {
+                if (this.activeDataSets.has('vapingCravings')) {
                     cardsHTML += `
                         <div class="summary-card">
                             <div class="summary-number">${totals.vapingCravings}</div>
                             <div class="summary-label">Vaping Cravings ${periodLabels[this.currentPeriod]}</div>
                         </div>
+                    `;
+                }
+                
+                if (this.activeDataSets.has('vapingConsumed')) {
+                    cardsHTML += `
                         <div class="summary-card">
                             <div class="summary-number">${totals.vapingConsumed}</div>
                             <div class="summary-label">Vaped ${periodLabels[this.currentPeriod]}</div>
@@ -1078,16 +1081,28 @@
                     `;
                 }
                 
-                if (this.activeFilters.has('alcohol')) {
+                if (this.activeDataSets.has('alcoholCravings')) {
                     cardsHTML += `
                         <div class="summary-card">
                             <div class="summary-number">${totals.alcoholCravings}</div>
                             <div class="summary-label">Alcohol Cravings ${periodLabels[this.currentPeriod]}</div>
                         </div>
+                    `;
+                }
+                
+                if (this.activeDataSets.has('alcoholConsumed')) {
+                    cardsHTML += `
                         <div class="summary-card">
                             <div class="summary-number">${totals.alcoholConsumed}</div>
                             <div class="summary-label">Drank ${periodLabels[this.currentPeriod]}</div>
                         </div>
+                    `;
+                }
+                
+                // Show cost card if any alcohol data set is active and there are costs
+                const showAlcoholCosts = this.activeDataSets.has('alcoholCravings') || this.activeDataSets.has('alcoholConsumed');
+                if (showAlcoholCosts && totals.alcoholCost > 0) {
+                    cardsHTML += `
                         <div class="summary-card cost-card">
                             <div class="summary-number">£${totals.alcoholCost.toFixed(2)}</div>
                             <div class="summary-label">Spent ${periodLabels[this.currentPeriod]}</div>
@@ -1126,12 +1141,10 @@
                 // Create line graph HTML structure
                 const maxValue = Math.max(...data.map(d => {
                     const values = [];
-                    if (this.activeFilters.has('vaping')) {
-                        values.push(d.vapingCravings, d.vapingConsumed);
-                    }
-                    if (this.activeFilters.has('alcohol')) {
-                        values.push(d.alcoholCravings, d.alcoholConsumed);
-                    }
+                    if (this.activeDataSets.has('vapingCravings')) values.push(d.vapingCravings);
+                    if (this.activeDataSets.has('vapingConsumed')) values.push(d.vapingConsumed);
+                    if (this.activeDataSets.has('alcoholCravings')) values.push(d.alcoholCravings);
+                    if (this.activeDataSets.has('alcoholConsumed')) values.push(d.alcoholConsumed);
                     return Math.max(...values, 0);
                 }), 1);
 
@@ -1141,8 +1154,9 @@
                     const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
                     const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     
-                    // Add cost display if alcohol filter is active and there's a cost
-                    const costDisplay = (this.activeFilters.has('alcohol') && item.alcoholCost > 0) 
+                    // Add cost display if any alcohol data set is active and there's a cost
+                    const showAlcoholCosts = this.activeDataSets.has('alcoholCravings') || this.activeDataSets.has('alcoholConsumed');
+                    const costDisplay = (showAlcoholCosts && item.alcoholCost > 0) 
                         ? `<div class="cost-total">£${item.alcoholCost.toFixed(2)}</div>` 
                         : '';
                     
@@ -1248,12 +1262,10 @@
                 };
                 
                 const categories = [];
-                if (this.activeFilters.has('vaping')) {
-                    categories.push('vapingCravings', 'vapingConsumed');
-                }
-                if (this.activeFilters.has('alcohol')) {
-                    categories.push('alcoholCravings', 'alcoholConsumed');
-                }
+                if (this.activeDataSets.has('vapingCravings')) categories.push('vapingCravings');
+                if (this.activeDataSets.has('vapingConsumed')) categories.push('vapingConsumed');
+                if (this.activeDataSets.has('alcoholCravings')) categories.push('alcoholCravings');
+                if (this.activeDataSets.has('alcoholConsumed')) categories.push('alcoholConsumed');
                 
                 
                 
@@ -1543,72 +1555,32 @@
                     return;
                 }
 
-                // Update filter buttons based on visibility
-                if (this.vapingFilter && this.alcoholFilter) {
-                    this.vapingFilter.style.display = this.categoryVisibility.vaping ? 'block' : 'none';
-                    this.alcoholFilter.style.display = this.categoryVisibility.alcohol ? 'block' : 'none';
+                // Handle data set visibility based on category toggles
+                if (!this.categoryVisibility.vaping) {
+                    // Remove vaping data sets when vaping is disabled
+                    this.activeDataSets.delete('vapingCravings');
+                    this.activeDataSets.delete('vapingConsumed');
+                } else {
+                    // Re-enable vaping data sets when vaping is enabled (if they were previously active)
+                    this.activeDataSets.add('vapingCravings');
+                    this.activeDataSets.add('vapingConsumed');
+                }
+                
+                if (!this.categoryVisibility.alcohol) {
+                    // Remove alcohol data sets when alcohol is disabled
+                    this.activeDataSets.delete('alcoholCravings');
+                    this.activeDataSets.delete('alcoholConsumed');
+                } else {
+                    // Re-enable alcohol data sets when alcohol is enabled (if they were previously active)
+                    this.activeDataSets.add('alcoholCravings');
+                    this.activeDataSets.add('alcoholConsumed');
                 }
 
-                // Remove hidden categories from active filters
-                if (!this.categoryVisibility.vaping && this.activeFilters.has('vaping')) {
-                    this.activeFilters.delete('vaping');
-                }
-                if (!this.categoryVisibility.alcohol && this.activeFilters.has('alcohol')) {
-                    this.activeFilters.delete('alcohol');
-                }
-
-                // Update filter button states
-                this.updateFilterButtons();
-                this.updateLegend();
+                // Update legend states
+                this.updateLegendStates();
                 this.updateHeaderStats(); // Update header stats to reflect only visible categories
             }
 
-            updateFilterButtons() {
-                // Update filter button states based on active filters and visibility
-                this.filterBtns.forEach(btn => {
-                    const filter = btn.dataset.filter;
-                    if (filter === 'all') {
-                        btn.classList.toggle('active', this.activeFilters.has('vaping') && this.activeFilters.has('alcohol'));
-                    } else {
-                        btn.classList.toggle('active', this.activeFilters.has(filter));
-                    }
-                });
-            }
-
-            updateLegend() {
-                const legend = document.getElementById('chartLegend');
-                if (!legend) return;
-
-                let legendHTML = '';
-                
-                if (this.categoryVisibility.vaping) {
-                    legendHTML += `
-                        <div class="legend-item">
-                            <div class="legend-color cravings"></div>
-                            <span>Vaping Cravings</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color vaped"></div>
-                            <span>Vaped</span>
-                        </div>
-                    `;
-                }
-                
-                if (this.categoryVisibility.alcohol) {
-                    legendHTML += `
-                        <div class="legend-item">
-                            <div class="legend-color alcohol-cravings"></div>
-                            <span>Alcohol Cravings</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color alcohol-consumed"></div>
-                            <span>Drank</span>
-                        </div>
-                    `;
-                }
-                
-                legend.innerHTML = legendHTML;
-            }
 
             updateIntensityLabel(value, labelElement) {
                 ModalUtils.updateIntensityLabel(value, labelElement);
@@ -1743,16 +1715,23 @@
                         <button class="period-btn" data-period="year">Year</button>
                     </div>
 
-                    <div class="filter-controls">
-                        <button class="filter-btn active" data-filter="all" id="allFilter">
-                            📊 All Data
-                        </button>
-                        <button class="filter-btn active" data-filter="vaping" id="vapingFilter">
-                            💨 Vaping
-                        </button>
-                        <button class="filter-btn active" data-filter="alcohol" id="alcoholFilter">
-                            🍷 Alcohol
-                        </button>
+                    <div class="interactive-legend" id="interactiveLegend">
+                        <div class="legend-item clickable active" data-filter="vapingCravings" id="vapingCravingsLegend">
+                            <div class="legend-color cravings"></div>
+                            <span>Vaping Cravings</span>
+                        </div>
+                        <div class="legend-item clickable active" data-filter="vapingConsumed" id="vapingConsumedLegend">
+                            <div class="legend-color vaped"></div>
+                            <span>Vaped</span>
+                        </div>
+                        <div class="legend-item clickable active" data-filter="alcoholCravings" id="alcoholCravingsLegend">
+                            <div class="legend-color alcohol-cravings"></div>
+                            <span>Alcohol Cravings</span>
+                        </div>
+                        <div class="legend-item clickable active" data-filter="alcoholConsumed" id="alcoholConsumedLegend">
+                            <div class="legend-color alcohol-consumed"></div>
+                            <span>Drank</span>
+                        </div>
                     </div>
 
                     <div class="timeline-chart">
@@ -1783,24 +1762,6 @@
                                         No data available for the selected period.
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="legend" id="chartLegend">
-                            <div class="legend-item">
-                                <div class="legend-color cravings"></div>
-                                <span>Vaping Cravings</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color vaped"></div>
-                                <span>Vaped</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color alcohol-cravings"></div>
-                                <span>Alcohol Cravings</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color alcohol-consumed"></div>
-                                <span>Drank</span>
                             </div>
                         </div>
                     </div>
