@@ -523,12 +523,9 @@
                 
                 // Stats elements
                 this.todayCravings = document.getElementById('todayCravings');
-                this.totalCravings = document.getElementById('totalCravings');
-                this.totalSmoked = document.getElementById('totalSmoked');
                 this.smokeFreeTime = document.getElementById('smokeFreeTime');
                 this.cravingsLabel = document.getElementById('cravingsLabel');
                 this.freeTimeLabel = document.getElementById('freeTimeLabel');
-                this.totalConsumedLabel = document.getElementById('totalConsumedLabel');
                 
                 // Modal elements
                 this.entryModal = document.getElementById('entryModal');
@@ -633,14 +630,12 @@
                     this.smokedBtn.style.background = 'linear-gradient(45deg, #2d3748, #4a5568)';
                     this.cravingsLabel.textContent = 'Vape Cravings';
                     this.freeTimeLabel.textContent = 'Vape Free';
-                    this.totalConsumedLabel.textContent = 'Total Vaped';
                 } else {
                     this.cravingBtn.innerHTML = '🤔 Had a Craving';
                     this.smokedBtn.innerHTML = '🍷 I Drank';
                     this.smokedBtn.style.background = 'linear-gradient(45deg, #b83280, #d69e2e)';
                     this.cravingsLabel.textContent = 'Alcohol Cravings';
                     this.freeTimeLabel.textContent = 'Alcohol Free';
-                    this.totalConsumedLabel.textContent = 'Total Drinks';
                 }
                 
                 // Update modal options
@@ -936,8 +931,6 @@
                 const totalVaped = this.entries.filter(e => e.type === 'smoked' && e.category === this.currentCategory);
                 
                 this.todayCravings.textContent = todayCravings.length;
-                this.totalCravings.textContent = totalCravings.length;
-                this.totalSmoked.textContent = totalVaped.length;
                 
                 // Calculate vape-free time
                 const lastVaped = totalVaped.length > 0 

@@ -478,8 +478,6 @@
                 
                 // Stats elements
                 this.todayCravings = document.getElementById('todayCravings');
-                this.totalCravings = document.getElementById('totalCravings');
-                this.totalSmoked = document.getElementById('totalSmoked');
                 this.smokeFreeTime = document.getElementById('smokeFreeTime');
                 
                 // Edit modal elements
@@ -685,30 +683,24 @@
                 );
                 
                 this.todayCravings.textContent = todayCravings.length;
-                this.totalCravings.textContent = totalCravings.length;
-                this.totalSmoked.textContent = totalConsumed.length;
                 
                 // Update labels based on visible categories
                 const cravingsLabel = document.querySelector('.stats .stat-group h4');
                 const freeTimeLabel = document.querySelector('.stats .stat-group:nth-child(2) h4');
-                const totalConsumedLabel = document.querySelector('.stats .stat-group:nth-child(2) .stat-label');
                 
                 if (visibleCategories.length === 1) {
                     // Single category - use specific labels
                     if (visibleCategories[0] === 'vaping') {
                         if (cravingsLabel) cravingsLabel.textContent = 'Vape Cravings';
                         if (freeTimeLabel) freeTimeLabel.textContent = 'Vape Free';
-                        if (totalConsumedLabel) totalConsumedLabel.textContent = 'Total Vaped';
                     } else {
                         if (cravingsLabel) cravingsLabel.textContent = 'Alcohol Cravings';
                         if (freeTimeLabel) freeTimeLabel.textContent = 'Alcohol Free';
-                        if (totalConsumedLabel) totalConsumedLabel.textContent = 'Total Drinks';
                     }
                 } else {
                     // Multiple categories - use generic labels
                     if (cravingsLabel) cravingsLabel.textContent = 'Cravings';
                     if (freeTimeLabel) freeTimeLabel.textContent = 'Free Time';
-                    if (totalConsumedLabel) totalConsumedLabel.textContent = 'Total Consumed';
                 }
                 
                 // Calculate free time based on visible categories
