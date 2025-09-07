@@ -85,21 +85,11 @@
                             <div class="stat-number" id="todayCravings">0</div>
                             <div class="stat-label">Today</div>
                         </div>
-                        <div class="stat">
-                            <div class="stat-number" id="totalCravings">0</div>
-                            <div class="stat-label">Total</div>
-                        </div>
                     </div>
                 </div>
                 <div class="stat-group">
                     <h4 id="freeTimeLabel">Vape Free</h4>
                     <div class="smoke-free-time" id="smokeFreeTime">0d 0h</div>
-                    <div class="stat-row">
-                        <div class="stat">
-                            <div class="stat-number" id="totalSmoked">0</div>
-                            <div class="stat-label" id="totalConsumedLabel">Total Vaped</div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="nav-buttons">
@@ -157,7 +147,7 @@
                 <div class="form-group">
                     <label for="entryType">Type:</label>
                     <select id="entryType" required>
-                        <option value="craving">Had a Craving</option>
+                        <option value="craving">Vape Craving</option>
                         <option value="smoked">I Vaped</option>
                     </select>
                 </div>
@@ -213,7 +203,7 @@
                 <div class="form-group">
                     <label for="editEntryType">Type:</label>
                     <select id="editEntryType" required>
-                        <option value="craving">Had a Craving</option>
+                        <option value="craving">Vape Craving</option>
                         <option value="smoked">I Vaped</option>
                     </select>
                 </div>
@@ -666,20 +656,20 @@
                 
                 if (this.currentCategory === 'vaping') {
                     entryTypeSelect.innerHTML = `
-                        <option value="craving">Had a Craving</option>
+                        <option value="craving">Vape Craving</option>
                         <option value="smoked">I Vaped</option>
                     `;
                     editEntryTypeSelect.innerHTML = `
-                        <option value="craving">Had a Craving</option>
+                        <option value="craving">Vape Craving</option>
                         <option value="smoked">I Vaped</option>
                     `;
                 } else {
                     entryTypeSelect.innerHTML = `
-                        <option value="craving">Had a Craving</option>
+                        <option value="craving">Drink Craving</option>
                         <option value="smoked">I Drank</option>
                     `;
                     editEntryTypeSelect.innerHTML = `
-                        <option value="craving">Had a Craving</option>
+                        <option value="craving">Drink Craving</option>
                         <option value="smoked">I Drank</option>
                     `;
                 }
@@ -738,6 +728,9 @@
 
             showEntryModal(type = null) {
                 const now = new Date();
+                
+                // Update modal options for current category
+                this.updateModalOptions();
                 
                 // Set modal title and button text
                 if (type === 'craving') {
