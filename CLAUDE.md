@@ -134,6 +134,7 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - **Dual chart types**: Bar charts for day/month/year views, line graph for week view
 - **Color coding**: Each category has distinct color scheme (vaping: blue/red, alcohol: purple/orange)
 - **Dynamic switching**: Chart type changes automatically based on selected time period
+- **Week navigation**: Arrow buttons navigate between weeks with proper cost total updates
 
 ### Cost Tracking System
 - **Entry-level costs**: Alcohol consumption entries can include cost (£0.00-£10.00 range)
@@ -141,6 +142,7 @@ This is a **Craving Tracker** - a Progressive Web App (PWA) for addiction cessat
 - **Timeline aggregation**: Cost totals calculated per time period (day/week/month/year)
 - **Visual display**: Cost totals shown below time period labels when alcohol filter active
 - **Summary analytics**: Purple cost summary card shows total spending for selected period
+- **Period-specific totals**: Cost totals update correctly when navigating between different time periods
 - **Conditional visibility**: Cost features only appear for alcohol category consumption entries
 
 ### Navigation Pattern
