@@ -1037,12 +1037,17 @@
 
             renderSummaryStats(data) {
                 // Calculate totals for all categories
+                // For day and week views, use all data as it's already filtered to the correct period
+                // For month and year views, use the last visible items
+                const visibleData = (this.currentPeriod === 'day' || this.currentPeriod === 'week') ? data : 
+                                   data.slice(Math.max(0, data.length - this.getVisibleItemCount()));
+                
                 const totals = {
-                    vapingCravings: data.reduce((sum, item) => sum + item.vapingCravings, 0),
-                    vapingConsumed: data.reduce((sum, item) => sum + item.vapingConsumed, 0),
-                    alcoholCravings: data.reduce((sum, item) => sum + item.alcoholCravings, 0),
-                    alcoholConsumed: data.reduce((sum, item) => sum + item.alcoholConsumed, 0),
-                    alcoholCost: data.reduce((sum, item) => sum + (item.alcoholCost || 0), 0)
+                    vapingCravings: visibleData.reduce((sum, item) => sum + item.vapingCravings, 0),
+                    vapingConsumed: visibleData.reduce((sum, item) => sum + item.vapingConsumed, 0),
+                    alcoholCravings: visibleData.reduce((sum, item) => sum + item.alcoholCravings, 0),
+                    alcoholConsumed: visibleData.reduce((sum, item) => sum + item.alcoholConsumed, 0),
+                    alcoholCost: visibleData.reduce((sum, item) => sum + (item.alcoholCost || 0), 0)
                 };
 
                 const periodLabels = {
@@ -1192,6 +1197,9 @@
                 setTimeout(() => {
                     this.drawLineGraph(data, maxValue);
                 }, 100);
+                
+                // Render summary stats for week view
+                this.renderSummaryStats(data);
             }
 
             drawLineGraph(data, maxValue) {
@@ -1494,6 +1502,17 @@
             closeBurgerMenu() {
                 this.burgerDropdown.classList.remove('show');
                 this.burgerOverlay.classList.remove('show');
+            }
+
+            getVisibleItemCount() {
+                // Return the number of items that should be visible on screen
+                // For week view, show 7 days; for month/year, show reasonable defaults
+                switch (this.currentPeriod) {
+                    case 'week': return 7;
+                    case 'month': return 12; // 12 months typically visible
+                    case 'year': return 5;   // 5 years typically visible
+                    default: return 24; // 24 hours for day view
+                }
             }
 
             toggleCategoryVisibility(category) {
