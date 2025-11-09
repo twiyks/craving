@@ -1430,12 +1430,8 @@ body {
         padding-right: 4px;
     }
     
-    /* Mobile keyboard accommodation - move modal up when textarea focused */
+    /* Mobile keyboard accommodation - use JavaScript for dynamic positioning */
     .modal-content {
-        transition: margin 0.3s ease;
-    }
-    
-    .modal-content.keyboard-active {
-        margin: 2% auto;
+        transition: all 0.3s ease;
     }
 }

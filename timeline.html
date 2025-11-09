@@ -1563,20 +1563,46 @@
                 textareas.forEach(textarea => {
                     textarea.addEventListener('focus', () => {
                         if (window.innerWidth <= 480) {
-                            const modalContent = textarea.closest('.modal-content');
-                            if (modalContent) {
-                                modalContent.classList.add('keyboard-active');
-                            }
+                            setTimeout(() => this.adjustModalForKeyboard(textarea), 300);
                         }
                     });
                     
                     textarea.addEventListener('blur', () => {
-                        const modalContent = textarea.closest('.modal-content');
-                        if (modalContent) {
-                            modalContent.classList.remove('keyboard-active');
+                        if (window.innerWidth <= 480) {
+                            this.resetModalPosition(textarea);
                         }
                     });
                 });
+            }
+
+            adjustModalForKeyboard(textarea) {
+                const modalContent = textarea.closest('.modal-content');
+                if (!modalContent) return;
+
+                // Use visual viewport if available (modern browsers)
+                const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+                const isKeyboardVisible = viewportHeight < window.innerHeight * 0.8;
+                
+                if (isKeyboardVisible) {
+                    // Position modal at top of visible area
+                    modalContent.style.margin = '10px auto';
+                    modalContent.style.maxHeight = `${viewportHeight - 60}px`;
+                    modalContent.style.overflow = 'auto';
+                    
+                    // Scroll textarea into view
+                    setTimeout(() => {
+                        textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                }
+            }
+
+            resetModalPosition(textarea) {
+                const modalContent = textarea.closest('.modal-content');
+                if (!modalContent) return;
+                
+                modalContent.style.margin = '';
+                modalContent.style.maxHeight = '';
+                modalContent.style.overflow = '';
             }
 
             updatePeriodLabel() {
