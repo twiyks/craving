@@ -1437,8 +1437,16 @@ body {
         padding-right: 4px;
     }
     
-    /* Mobile keyboard accommodation - use JavaScript for dynamic positioning */
+    /* Mobile keyboard accommodation - simple CSS approach */
     .modal-content {
-        transition: all 0.3s ease;
+        margin: 5% auto;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    /* Make textarea smaller on mobile to save space */
+    .form-group textarea {
+        min-height: 60px;
+        max-height: 120px;
     }
 }

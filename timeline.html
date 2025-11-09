@@ -20,7 +20,7 @@
                     <button class="burger-icon" id="burgerBtn">☰</button>
                     <div class="burger-dropdown" id="burgerDropdown">
                         <div class="burger-header">
-                            <div class="app-version">v0.5.0</div>
+                            <div class="app-version">v0.5.1</div>
                             <button class="burger-close" id="burgerCloseBtn">✕</button>
                         </div>
                         <div class="burger-section">
@@ -551,7 +551,7 @@
                 if (this.dailyCostSlider) this.dailyCostSlider.addEventListener('input', () => this.updateDailyCostFromSlider());
                 
                 // Mobile keyboard accommodation for textareas
-                this.setupMobileKeyboardHandlers();
+                // this.setupMobileKeyboardHandlers();
                 
                 this.periodBtns.forEach(btn => {
                     btn.addEventListener('click', () => {
