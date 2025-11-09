@@ -641,6 +641,30 @@
                 if (this.dailyCostSlider) {
                     this.dailyCostSlider.addEventListener('input', () => this.updateDailyCostFromSlider());
                 }
+                
+                // Mobile keyboard accommodation for textareas
+                this.setupMobileKeyboardHandlers();
+            }
+
+            setupMobileKeyboardHandlers() {
+                const textareas = document.querySelectorAll('textarea');
+                textareas.forEach(textarea => {
+                    textarea.addEventListener('focus', () => {
+                        if (window.innerWidth <= 480) {
+                            const modalContent = textarea.closest('.modal-content');
+                            if (modalContent) {
+                                modalContent.classList.add('keyboard-active');
+                            }
+                        }
+                    });
+                    
+                    textarea.addEventListener('blur', () => {
+                        const modalContent = textarea.closest('.modal-content');
+                        if (modalContent) {
+                            modalContent.classList.remove('keyboard-active');
+                        }
+                    });
+                });
             }
 
             switchCategory(category) {

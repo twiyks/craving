@@ -1430,21 +1430,12 @@ body {
         padding-right: 4px;
     }
     
-    /* Mobile keyboard fix - adjust modal positioning and textarea size */
+    /* Mobile keyboard accommodation - move modal up when textarea focused */
     .modal-content {
-        margin: 5% auto;
-        max-height: 70vh;
-        overflow-y: auto;
+        transition: margin 0.3s ease;
     }
     
-    /* Make textarea smaller on mobile to save space */
-    .form-group textarea {
-        min-height: 60px;
-        max-height: 120px;
-    }
-    
-    /* Ensure focused textarea scrolls into view */
-    .form-group textarea:focus {
-        scroll-margin-top: 20px;
+    .modal-content.keyboard-active {
+        margin: 2% auto;
     }
 }

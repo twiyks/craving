@@ -549,6 +549,9 @@
                 if (this.notesToggle) this.notesToggle.addEventListener('click', () => this.toggleNotesVisibility());
                 if (this.dailyCostSlider) this.dailyCostSlider.addEventListener('input', () => this.updateDailyCostFromSlider());
                 
+                // Mobile keyboard accommodation for textareas
+                this.setupMobileKeyboardHandlers();
+                
                 this.periodBtns.forEach(btn => {
                     btn.addEventListener('click', () => {
                         this.periodBtns.forEach(b => b.classList.remove('active'));
@@ -1553,6 +1556,27 @@
                 this.dailyCostValue.textContent = `£${this.dailyAverageCost.toFixed(2)}`;
                 this.saveDailyCostSetting();
                 this.updateHeaderStats(); // Update savings calculation
+            }
+
+            setupMobileKeyboardHandlers() {
+                const textareas = document.querySelectorAll('textarea');
+                textareas.forEach(textarea => {
+                    textarea.addEventListener('focus', () => {
+                        if (window.innerWidth <= 480) {
+                            const modalContent = textarea.closest('.modal-content');
+                            if (modalContent) {
+                                modalContent.classList.add('keyboard-active');
+                            }
+                        }
+                    });
+                    
+                    textarea.addEventListener('blur', () => {
+                        const modalContent = textarea.closest('.modal-content');
+                        if (modalContent) {
+                            modalContent.classList.remove('keyboard-active');
+                        }
+                    });
+                });
             }
 
             updatePeriodLabel() {
