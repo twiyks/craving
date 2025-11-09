@@ -15,7 +15,6 @@
             <div class="header-top">
                 <div>
                     <h1>Habit Tracker</h1>
-                    <p>Track your progress, one step at a time</p>
                 </div>
                 <div class="burger-menu">
                     <button class="burger-icon" id="burgerBtn">☰</button>
@@ -61,6 +60,26 @@
                             </div>
                         </div>
                          <div class="burger-section">
+                             <h4>Settings</h4>
+                             <div class="category-toggles">
+                                 <div class="toggle-item">
+                                     <div class="toggle-label">
+                                         <span>💰</span>
+                                         <span>Daily Average Cost</span>
+                                     </div>
+                                     <div class="intensity-slider-container">
+                                         <input type="range" id="dailyCostSlider" min="0" max="200" step="1" value="0" class="intensity-slider">
+                                         <div class="intensity-labels">
+                                             <span class="intensity-label">£0</span>
+                                             <span class="intensity-label">£25</span>
+                                             <span class="intensity-label">£50</span>
+                                         </div>
+                                         <div class="intensity-value" id="dailyCostValue">£0.00</div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="burger-section">
                              <h4>Display Options</h4>
                              <div class="category-toggles">
                                  <div class="toggle-item">
@@ -90,6 +109,10 @@
                 <div class="stat-group">
                     <h4>Vape Free</h4>
                     <div class="smoke-free-time" id="smokeFreeTime">0d 0h</div>
+                </div>
+                <div class="stat-group" id="savingsGroup" style="display: none;">
+                    <h4>Money Saved</h4>
+                    <div class="smoke-free-time" id="savingsAmount">£0.00</div>
                 </div>
             </div>
             <div class="nav-buttons">
@@ -392,6 +415,7 @@
                 };
                 this.updatingVisibility = false;
                 this.showNotes = true;
+                this.dailyAverageCost = 0;
                 this.currentEditingId = null;
                 this.initializeElements();
                 this.bindEvents();
@@ -425,10 +449,12 @@
                 
                 this.loadCategoryVisibilitySettings(); // Load category visibility settings
                 this.loadNotesSetting();
+                this.loadDailyCostSetting();
                 this.updateCategoryVisibility(); // Apply visibility settings
                 this.updateHeaderStats();
                 this.renderChart();
                 this.updateNotesToggleUI();
+                this.updateDailyCostUI();
             }
 
             initializeElements() {
@@ -466,6 +492,8 @@
                 this.vapingToggle = document.getElementById('vapingToggle');
                 this.alcoholToggle = document.getElementById('alcoholToggle');
                 this.notesToggle = document.getElementById('notesToggle');
+                this.dailyCostSlider = document.getElementById('dailyCostSlider');
+                this.dailyCostValue = document.getElementById('dailyCostValue');
                 this.importFile = document.getElementById('importFile');
                 this.activityList = document.getElementById('activityList');
                 
@@ -479,6 +507,8 @@
                 // Stats elements
                 this.todayCravings = document.getElementById('todayCravings');
                 this.smokeFreeTime = document.getElementById('smokeFreeTime');
+                this.savingsGroup = document.getElementById('savingsGroup');
+                this.savingsAmount = document.getElementById('savingsAmount');
                 
                 // Edit modal elements
                 this.editEntryModal = document.getElementById('editEntryModal');
@@ -517,6 +547,7 @@
                 if (this.vapingToggle) this.vapingToggle.addEventListener('click', () => this.toggleCategoryVisibility('vaping'));
                 if (this.alcoholToggle) this.alcoholToggle.addEventListener('click', () => this.toggleCategoryVisibility('alcohol'));
                 if (this.notesToggle) this.notesToggle.addEventListener('click', () => this.toggleNotesVisibility());
+                if (this.dailyCostSlider) this.dailyCostSlider.addEventListener('input', () => this.updateDailyCostFromSlider());
                 
                 this.periodBtns.forEach(btn => {
                     btn.addEventListener('click', () => {
@@ -703,10 +734,12 @@
                     if (freeTimeLabel) freeTimeLabel.textContent = 'Free Time';
                 }
                 
-                // Calculate free time based on visible categories
+                // Calculate free time and alcohol-free days for savings
                 const lastConsumed = totalConsumed.length > 0 
                     ? new Date(totalConsumed[0].timestamp) 
                     : null;
+                
+                let alcoholFreeDays = 0;
                 
                 if (lastConsumed) {
                     const timeDiff = Date.now() - lastConsumed.getTime();
@@ -718,8 +751,42 @@
                     } else {
                         this.smokeFreeTime.textContent = `${hours}h`;
                     }
+                    
+                    // For alcohol category, calculate days for savings calculation
+                    if (visibleCategories.length === 1 && visibleCategories[0] === 'alcohol') {
+                        alcoholFreeDays = days;
+                    }
                 } else {
                     this.smokeFreeTime.textContent = '0d 0h';
+                    
+                    // If no consumption entries exist for alcohol, calculate from earliest entry
+                    if (visibleCategories.length === 1 && visibleCategories[0] === 'alcohol') {
+                        const alcoholEntries = this.entries.filter(e => e.category === 'alcohol');
+                        if (alcoholEntries.length > 0) {
+                            const earliestEntry = alcoholEntries.reduce((earliest, current) => {
+                                return new Date(current.timestamp) < new Date(earliest.timestamp) ? current : earliest;
+                            });
+                            const daysSinceStart = Math.floor((Date.now() - new Date(earliestEntry.timestamp).getTime()) / (1000 * 60 * 60 * 24));
+                            alcoholFreeDays = daysSinceStart;
+                        }
+                    }
+                }
+                
+                // Update savings display
+                this.updateSavingsDisplay(alcoholFreeDays, visibleCategories);
+            }
+            
+            updateSavingsDisplay(alcoholFreeDays, visibleCategories = null) {
+                if (!visibleCategories) {
+                    visibleCategories = Object.keys(this.categoryVisibility).filter(cat => this.categoryVisibility[cat]);
+                }
+                
+                if (this.dailyAverageCost > 0 && visibleCategories.length === 1 && visibleCategories[0] === 'alcohol' && alcoholFreeDays > 0) {
+                    const savings = this.dailyAverageCost * alcoholFreeDays;
+                    this.savingsAmount.textContent = `£${savings.toFixed(2)}`;
+                    this.savingsGroup.style.display = 'block';
+                } else {
+                    this.savingsGroup.style.display = 'none';
                 }
             }
 
@@ -1448,6 +1515,44 @@
                 if (this.currentPeriod === 'day') {
                     this.renderDayActivity();
                 }
+            }
+
+            // Daily cost setting functions
+            loadDailyCostSetting() {
+                try {
+                    const saved = localStorage.getItem('dailyAverageCost');
+                    if (saved !== null) {
+                        this.dailyAverageCost = parseFloat(saved) || 0;
+                    }
+                } catch (e) {
+                    this.dailyAverageCost = 0;
+                }
+            }
+
+            saveDailyCostSetting() {
+                try {
+                    localStorage.setItem('dailyAverageCost', this.dailyAverageCost.toString());
+                } catch (e) {
+                    // noop
+                }
+            }
+
+            updateDailyCostUI() {
+                if (this.dailyCostSlider && this.dailyCostValue) {
+                    // Convert daily cost to slider range (0-200 = £0-£50)
+                    const sliderValue = Math.round(this.dailyAverageCost * 4);
+                    this.dailyCostSlider.value = sliderValue;
+                    this.dailyCostValue.textContent = `£${this.dailyAverageCost.toFixed(2)}`;
+                }
+            }
+
+            updateDailyCostFromSlider() {
+                // Convert slider range (0-200) to cost (£0-£50 in £0.25 increments)
+                const sliderValue = parseInt(this.dailyCostSlider.value);
+                this.dailyAverageCost = sliderValue * 0.25;
+                this.dailyCostValue.textContent = `£${this.dailyAverageCost.toFixed(2)}`;
+                this.saveDailyCostSetting();
+                this.updateHeaderStats(); // Update savings calculation
             }
 
             updatePeriodLabel() {
