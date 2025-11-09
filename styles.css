@@ -1293,6 +1293,23 @@ body {
     margin-top: 5px;
 }
 
+/* Daily Cost Slider in Burger Menu */
+.daily-cost-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px;
+}
+
+.daily-cost-item .toggle-label {
+    align-self: flex-start;
+    margin-bottom: 5px;
+}
+
+.daily-cost-slider-container {
+    width: 100%;
+    margin-top: 5px;
+}
+
 /* Empty State */
 .empty-state {
     text-align: center;
