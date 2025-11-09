@@ -648,49 +648,88 @@
 
             setupMobileKeyboardHandlers() {
                 const textareas = document.querySelectorAll('textarea');
+                const modals = document.querySelectorAll('.modal');
+                
                 textareas.forEach(textarea => {
-                    textarea.addEventListener('focus', () => {
+                    textarea.addEventListener('focus', (e) => {
                         if (window.innerWidth <= 480) {
-                            setTimeout(() => this.adjustModalForKeyboard(textarea), 300);
+                            this.handleTextareaFocus(textarea, e);
                         }
                     });
                     
                     textarea.addEventListener('blur', () => {
                         if (window.innerWidth <= 480) {
-                            this.resetModalPosition(textarea);
+                            this.handleTextareaBlur(textarea);
                         }
+                    });
+                });
+
+                // Prevent double-tap issue with modal buttons
+                modals.forEach(modal => {
+                    const buttons = modal.querySelectorAll('button[type="submit"], .btn');
+                    buttons.forEach(button => {
+                        button.addEventListener('touchend', (e) => {
+                            // Prevent default and handle immediately
+                            e.preventDefault();
+                            e.stopPropagation();
+                            // Trigger click after a small delay to ensure keyboard closes
+                            setTimeout(() => {
+                                button.click();
+                            }, 100);
+                        }, { passive: false });
                     });
                 });
             }
 
-            adjustModalForKeyboard(textarea) {
+            handleTextareaFocus(textarea, event) {
+                const modal = textarea.closest('.modal');
                 const modalContent = textarea.closest('.modal-content');
-                if (!modalContent) return;
+                if (!modal || !modalContent) return;
 
-                // Use visual viewport if available (modern browsers)
-                const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-                const isKeyboardVisible = viewportHeight < window.innerHeight * 0.8;
-                
-                if (isKeyboardVisible) {
-                    // Position modal at top of visible area
-                    modalContent.style.margin = '10px auto';
-                    modalContent.style.maxHeight = `${viewportHeight - 60}px`;
-                    modalContent.style.overflow = 'auto';
-                    
-                    // Scroll textarea into view
-                    setTimeout(() => {
-                        textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 100);
-                }
+                // Prevent default page scrolling behavior
+                document.body.style.position = 'fixed';
+                document.body.style.top = `-${window.scrollY}px`;
+                document.body.style.width = '100%';
+
+                // Position modal in upper portion of screen
+                modalContent.style.position = 'fixed';
+                modalContent.style.top = '20px';
+                modalContent.style.left = '50%';
+                modalContent.style.transform = 'translateX(-50%)';
+                modalContent.style.margin = '0';
+                modalContent.style.maxHeight = '60vh';
+                modalContent.style.overflow = 'auto';
+                modalContent.style.zIndex = '1001';
+
+                // Focus the textarea after positioning
+                setTimeout(() => {
+                    textarea.focus();
+                    textarea.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                }, 50);
             }
 
-            resetModalPosition(textarea) {
+            handleTextareaBlur(textarea) {
                 const modalContent = textarea.closest('.modal-content');
                 if (!modalContent) return;
-                
+
+                // Restore body scrolling
+                const scrollY = document.body.style.top;
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
+                if (scrollY) {
+                    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                }
+
+                // Reset modal positioning
+                modalContent.style.position = '';
+                modalContent.style.top = '';
+                modalContent.style.left = '';
+                modalContent.style.transform = '';
                 modalContent.style.margin = '';
                 modalContent.style.maxHeight = '';
                 modalContent.style.overflow = '';
+                modalContent.style.zIndex = '';
             }
 
             switchCategory(category) {
