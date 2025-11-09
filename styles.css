@@ -1422,4 +1422,22 @@ body {
         font-size: 9px;
         padding-right: 4px;
     }
+    
+    /* Mobile keyboard fix - adjust modal positioning and textarea size */
+    .modal-content {
+        margin: 5% auto;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    /* Make textarea smaller on mobile to save space */
+    .form-group textarea {
+        min-height: 60px;
+        max-height: 120px;
+    }
+    
+    /* Ensure focused textarea scrolls into view */
+    .form-group textarea:focus {
+        scroll-margin-top: 20px;
+    }
 }
